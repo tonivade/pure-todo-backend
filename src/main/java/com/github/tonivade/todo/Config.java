@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
+ * Distributed under the terms of the MIT License
+ */
 package com.github.tonivade.todo;
 
 import com.github.tonivade.purecfg.PureCFG;
@@ -16,17 +20,17 @@ import static java.util.Objects.requireNonNull;
 
 public record Config(Server server, Database database) {
 
+  public Config {
+    requireNonNull(server);
+    requireNonNull(database);
+  }
+
   public static Validation<Validation.Result<String>, Config> load(String file) {
     return map2(
         readConfig("server", Server.load()),
         readConfig("database", Database.load()),
         Config::new
     ).validatedRun(readProperties(file));
-  }
-
-  public Config {
-    requireNonNull(server);
-    requireNonNull(database);
   }
 
   public record Server(String host, Integer port) {
@@ -43,12 +47,12 @@ public record Config(Server server, Database database) {
           Server::new);
     }
   }
-  public record Database(String url, String user, String pass) {
+  public record Database(String url, String user, String password) {
 
     public Database {
       requireNonNull(url);
       requireNonNull(user);
-      requireNonNull(pass);
+      requireNonNull(password);
     }
 
     public static PureCFG<Database> load() {

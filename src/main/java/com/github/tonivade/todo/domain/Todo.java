@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2020, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
+ * Distributed under the terms of the MIT License
+ */
 package com.github.tonivade.todo.domain;
 
 import static java.util.Objects.requireNonNull;
@@ -27,10 +31,7 @@ public record Todo(Id id, Title title, Order order, State state) {
   }
 
   public int getId() {
-    if (id instanceof Id.Impl impl) {
-      return impl.value();
-    }
-    return 0;
+    return id.get();
   }
 
   public String getTitle() {

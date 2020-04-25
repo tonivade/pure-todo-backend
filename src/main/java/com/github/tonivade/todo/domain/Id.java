@@ -1,6 +1,17 @@
+/*
+ * Copyright (c) 2020, Antonio Gabriel Muñoz Conejo <antoniogmc at gmail dot com>
+ * Distributed under the terms of the MIT License
+ */
 package com.github.tonivade.todo.domain;
 
 public interface Id {
+
+  default int get() {
+    if (this instanceof Impl impl) {
+      return impl.value();
+    }
+    return 0;
+  }
 
   static Id create(int value) {
     return new Impl(value);
