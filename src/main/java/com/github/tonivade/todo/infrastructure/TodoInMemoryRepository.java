@@ -62,7 +62,7 @@ public class TodoInMemoryRepository implements TodoRepository<Task.µ> {
 
   @Override
   public Higher1<Task.µ, Unit> deleteAll() {
-    return exec(() -> map.clear());
+    return exec(map::clear);
   }
 
   @Override

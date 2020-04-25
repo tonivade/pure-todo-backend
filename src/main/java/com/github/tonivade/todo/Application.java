@@ -11,7 +11,9 @@ import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
 
 public class Application {
+
   public static void main(String[] args) {
+    var config = Config.load("application.properties").getOrElseThrow();
     var repository = new TodoInMemoryRepository();
     var api = new TodoAPI(repository);
     var service = new HttpUIOService("todo backend")
@@ -21,7 +23,9 @@ public class Application {
         .when(put("/:id")).then(api::update)
         .when(delete("/:id")).then(api::delete)
         .when(delete("/")).then(api::deleteAll).build();
-    var server = UIOMockHttpServer.async().host("localhost").port(8080).build();
+    var server = UIOMockHttpServer.async()
+        .host(config.server().host())
+        .port(config.server().port()).build();
     server.mount("/todo", service).start();
   }
 }
