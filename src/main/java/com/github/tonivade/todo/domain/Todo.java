@@ -5,10 +5,10 @@ import static java.util.Objects.requireNonNull;
 public record Todo(Id id, Title title, Order order, State state) {
 
   public Todo {
-    requireNonNull(id,    () -> "id cannot be null");
-    requireNonNull(title, () -> "title cannot be null");
-    requireNonNull(order, () -> "order cannot be null");
-    requireNonNull(state, () -> "state cannot be null");
+    requireNonNull(id, "id cannot be null");
+    requireNonNull(title, "title cannot be null");
+    requireNonNull(order, "order cannot be null");
+    requireNonNull(state, "state cannot be null");
   }
 
   public static Todo create(Integer id, String title, Integer order, Boolean completed) {
