@@ -5,18 +5,32 @@ import static java.util.Objects.requireNonNull;
 public record Todo(Id id, Title title, Order order, State state) {
 
   public Todo {
-    requireNonNull(id, "id cannot be null");
+    requireNonNull(id,    "id cannot be null");
     requireNonNull(title, "title cannot be null");
     requireNonNull(order, "order cannot be null");
     requireNonNull(state, "state cannot be null");
+    if (state == State.DRAFT && id instanceof Id.Impl) {
+      throw new IllegalArgumentException("draft cannot have and non empty id");
+    }
+  }
+
+  public static Todo draft(String title, Integer order) {
+    return new Todo(Id.empty(), new Title(title), new Order(order), State.DRAFT);
   }
 
   public static Todo create(Integer id, String title, Integer order, Boolean completed) {
-    return new Todo(new Id(id), new Title(title), new Order(order), completed ? State.COMPLETED : State.NOT_COMPLETED);
+    return new Todo(Id.create(id), new Title(title), new Order(order), completed ? State.COMPLETED : State.NOT_COMPLETED);
+  }
+
+  public Todo withId(int id) {
+    return new Todo(Id.create(id), title, order, State.NOT_COMPLETED);
   }
 
   public int getId() {
-    return id.value();
+    if (id instanceof Id.Impl impl) {
+      return impl.value();
+    }
+    return 0;
   }
 
   public String getTitle() {

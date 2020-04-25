@@ -1,12 +1,27 @@
 package com.github.tonivade.todo;
 
-import com.github.tonivade.todo.domain.Todo;
+import com.github.tonivade.todo.application.TodoAPI;
+import com.github.tonivade.todo.infrastructure.TodoInMemoryRepository;
+import com.github.tonivade.zeromock.api.HttpUIOService;
+import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+
+import static com.github.tonivade.zeromock.api.Matchers.delete;
+import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.api.Matchers.post;
+import static com.github.tonivade.zeromock.api.Matchers.put;
 
 public class Application {
   public static void main(String[] args) {
-    // TODO
-    var item = Todo.create(1, "title", 1, false);
-
-    System.out.println(item);
+    var repository = new TodoInMemoryRepository();
+    var api = new TodoAPI(repository);
+    var service = new HttpUIOService("todo backend")
+        .when(get("/:id")).then(api::find)
+        .when(get("/")).then(api::findAll)
+        .when(post("/")).then(api::create)
+        .when(put("/:id")).then(api::update)
+        .when(delete("/:id")).then(api::delete)
+        .when(delete("/")).then(api::deleteAll).build();
+    var server = UIOMockHttpServer.async().host("localhost").port(8080).build();
+    server.mount("/todo", service).start();
   }
 }

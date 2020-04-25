@@ -7,7 +7,11 @@ import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
-import com.github.tonivade.zeromock.api.*;
+import com.github.tonivade.zeromock.api.Bytes;
+import com.github.tonivade.zeromock.api.HttpRequest;
+import com.github.tonivade.zeromock.api.HttpResponse;
+import com.github.tonivade.zeromock.api.Responses;
+import com.github.tonivade.zeromock.api.Serializers;
 
 import java.util.NoSuchElementException;
 
@@ -33,16 +37,26 @@ public class TodoAPI {
         .map(contentJson());
   }
 
+  public UIO<HttpResponse> update(HttpRequest request) {
+    return getTodo(request)
+        .flatMap(todo -> repository.update(todo).fix1(Task::narrowK))
+        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
+        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
+        .map(contentJson());
+  }
+
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix1(Task::narrowK)
-        .fold(fromError(Responses::badRequest), fromSequence(Responses::ok));
+        .fold(fromError(Responses::badRequest), fromSequence(Responses::ok))
+        .map(contentJson());
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
     return getId(request)
         .flatMap(id -> repository.find(id).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
+        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
+        .map(contentJson());
   }
 
   public UIO<HttpResponse> delete(HttpRequest request) {
@@ -63,9 +77,9 @@ public class TodoAPI {
   }
 
   private Task<Id> getId(HttpRequest request) {
-    return task(() -> request.pathParam(1))
+    return task(() -> request.pathParam(0))
         .flatMap(id -> task(() -> Integer.parseInt(id)))
-        .map(Id::new);
+        .map(Id::create);
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
