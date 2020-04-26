@@ -12,6 +12,8 @@ import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import javax.sql.DataSource;
+
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.post;
@@ -23,11 +25,7 @@ public class Application {
     var config = Config.load("application.properties").getOrElseThrow();
 
     var dao = new TodoDAO();
-    HikariConfig configuration = new HikariConfig();
-    configuration.setJdbcUrl(config.database().url());
-    configuration.setUsername(config.database().user());
-    configuration.setPassword(config.database().password());
-    var dataSource = new HikariDataSource(configuration);
+    var dataSource = createDataSource(config);
 
     dao.create().unsafeRun(dataSource);
 
@@ -44,5 +42,13 @@ public class Application {
         .host(config.server().host())
         .port(config.server().port()).build();
     server.mount("/todo", service).start();
+  }
+
+  private static DataSource createDataSource(Config config) {
+    var configuration = new HikariConfig();
+    configuration.setJdbcUrl(config.database().url());
+    configuration.setUsername(config.database().user());
+    configuration.setPassword(config.database().password());
+    return new HikariDataSource(configuration);
   }
 }

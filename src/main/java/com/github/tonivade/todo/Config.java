@@ -29,8 +29,7 @@ public record Config(Server server, Database database) {
     return map2(
         readConfig("server", Server.load()),
         readConfig("database", Database.load()),
-        Config::new
-    ).validatedRun(readProperties(file));
+        Config::new).validatedRun(readProperties(file));
   }
 
   public record Server(String host, Integer port) {

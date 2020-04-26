@@ -23,6 +23,7 @@ import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.effect.Task.task;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
+import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 import static java.util.Objects.requireNonNull;
 
@@ -38,7 +39,8 @@ public class TodoAPI {
     return getTodo(request)
         .flatMap(todo -> repository.create(todo).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::created))
-        .map(contentJson());
+        .map(contentJson())
+        .map(enableCors());
   }
 
   public UIO<HttpResponse> update(HttpRequest request) {
@@ -46,13 +48,15 @@ public class TodoAPI {
         .flatMap(todo -> repository.update(todo).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
-        .map(contentJson());
+        .map(contentJson())
+        .map(enableCors());
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix1(Task::narrowK)
         .fold(fromError(Responses::badRequest), fromSequence(Responses::ok))
-        .map(contentJson());
+        .map(contentJson())
+        .map(enableCors());
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
@@ -60,18 +64,23 @@ public class TodoAPI {
         .flatMap(id -> repository.find(id).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
-        .map(contentJson());
+        .map(contentJson())
+        .map(enableCors());
   }
 
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .flatMap(id -> repository.delete(id).fix1(Task::narrowK))
-        .fold(fromError(Responses::badRequest), cons(Responses.ok()));
+        .fold(fromError(Responses::badRequest), cons(Responses.ok()))
+        .map(contentJson())
+        .map(enableCors());
   }
 
   public UIO<HttpResponse> deleteAll(HttpRequest request) {
      return repository.deleteAll().fix1(Task::narrowK)
-        .fold(fromError(Responses::badRequest), cons(Responses.ok()));
+        .fold(fromError(Responses::badRequest), cons(Responses.ok()))
+        .map(contentJson())
+        .map(enableCors());
   }
 
   private Task<Todo> getTodo(HttpRequest request) {
