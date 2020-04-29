@@ -35,12 +35,15 @@ public class TodoAPI {
     this.repository = requireNonNull(repository);
   }
 
+  public UIO<HttpResponse> cors(HttpRequest request) {
+    return UIO.pure(Responses.ok()).map(enableCors());
+  }
+
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodo(request)
         .flatMap(todo -> repository.create(todo).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::created))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   public UIO<HttpResponse> update(HttpRequest request) {
@@ -48,15 +51,13 @@ public class TodoAPI {
         .flatMap(todo -> repository.update(todo).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix1(Task::narrowK)
         .fold(fromError(Responses::badRequest), fromSequence(Responses::ok))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
@@ -64,35 +65,32 @@ public class TodoAPI {
         .flatMap(id -> repository.find(id).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .flatMap(id -> repository.delete(id).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), cons(Responses.ok()))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   public UIO<HttpResponse> deleteAll(HttpRequest request) {
      return repository.deleteAll().fix1(Task::narrowK)
         .fold(fromError(Responses::badRequest), cons(Responses.ok()))
-        .map(contentJson())
-        .map(enableCors());
+        .map(contentJson().andThen(enableCors()));
   }
 
   private Task<Todo> getTodo(HttpRequest request) {
     return Task.task(request::body)
-        .flatMap(Task.lift(jsonToObject(TodoDTO.class)))
-        .flatMap(Task.lift(TodoDTO::toDomain));
+        .map(jsonToObject(TodoDTO.class))
+        .map(TodoDTO::toDomain);
   }
 
   private Task<Id> getId(HttpRequest request) {
     return task(() -> request.pathParam(0))
-        .flatMap(id -> task(() -> Integer.parseInt(id)))
-        .map(Id::create);
+        .map(Integer::parseInt)
+        .map(Id::new);
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {

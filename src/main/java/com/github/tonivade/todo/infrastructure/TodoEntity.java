@@ -13,6 +13,10 @@ public record TodoEntity(Integer id, String title, Integer order, Boolean comple
   }
 
   public static TodoEntity fromDomain(Todo todo) {
-    return new TodoEntity(todo.getId(), todo.getTitle(), todo.getOrder(), todo.isCompleted());
+    return new TodoEntity(
+        todo.getId(),
+        todo.getTitle(),
+        todo.getOrder(),
+        todo.isCompleted());
   }
 }

@@ -40,8 +40,8 @@ public class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   public Higher1<Task.µ, Todo> create(Todo todo) {
     return PureDBC.pure(todo)
         .map(TodoEntity::fromDomain)
-        .flatMap(entity -> dao.insert(entity))
-        .map(id -> todo.withId(id))
+        .flatMap(dao::insert)
+        .map(todo::withId)
         .safeRunIO(dataSource);
   }
 
@@ -55,7 +55,7 @@ public class TodoDatabaseRepository implements TodoRepository<Task.µ> {
 
   @Override
   public Higher1<Task.µ, Option<Todo>> find(Id id) {
-    return dao.find(id.get())
+    return dao.find(id.value())
         .map(option -> option.map(TodoEntity::toDomain))
         .safeRunIO(dataSource);
   }
@@ -78,6 +78,6 @@ public class TodoDatabaseRepository implements TodoRepository<Task.µ> {
 
   @Override
   public Higher1<Task.µ, Unit> delete(Id id) {
-    return dao.delete(id.get()).safeRunIO(dataSource);
+    return dao.delete(id.value()).safeRunIO(dataSource);
   }
 }

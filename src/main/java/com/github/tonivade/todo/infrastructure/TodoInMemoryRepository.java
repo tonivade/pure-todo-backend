@@ -26,7 +26,7 @@ import static com.github.tonivade.purefun.effect.Task.task;
 public class TodoInMemoryRepository implements TodoRepository<Task.µ> {
 
   private final AtomicInteger counter = new AtomicInteger();
-  private final Map<Id, Todo> map = new ConcurrentHashMap<>();
+  private final Map<Integer, Todo> map = new ConcurrentHashMap<>();
 
   @Override
   public Monad<Task.µ> monad() {
@@ -37,7 +37,7 @@ public class TodoInMemoryRepository implements TodoRepository<Task.µ> {
   public Higher1<Task.µ, Todo> create(Todo todo) {
     return task(() -> {
       var created = todo.withId(counter.incrementAndGet());
-      map.put(created.id(), created);
+      map.put(created.getId(), created);
       return created;
     });
   }
@@ -57,7 +57,7 @@ public class TodoInMemoryRepository implements TodoRepository<Task.µ> {
     return task(() -> {
       Todo existing = map.get(todo.id());
       if (existing != null) {
-        map.put(todo.id(), todo);
+        map.put(todo.getId(), todo);
         return Option.of(todo);
       }
       return Option.none();

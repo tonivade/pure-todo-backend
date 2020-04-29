@@ -24,7 +24,7 @@ public class TodoDAO {
               create table todo (
                 id identity not null,
                 title varchar(100) not null,
-                position int not null,
+                position int,
                 completed int not null default 0,
                 primary key (id))
               """);
