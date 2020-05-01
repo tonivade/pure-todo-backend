@@ -37,6 +37,9 @@ public record Config(Server server, Database database) {
     public Server {
       requireNonNull(host);
       requireNonNull(port);
+      if (port < 1024 || port > 65535) {
+        throw new IllegalArgumentException("port out of ranges: " + port);
+      }
     }
 
     public static PureCFG<Server> load() {
