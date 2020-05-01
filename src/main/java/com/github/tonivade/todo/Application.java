@@ -23,7 +23,7 @@ import static com.github.tonivade.zeromock.api.Matchers.put;
 public class Application {
 
   public static void main(String[] args) {
-    var config = Config.load("application.properties").getOrElseThrow();
+    var config = Config.load("application.toml").getOrElseThrow();
 
     var dao = new TodoDAO();
     var dataSource = createDataSource(config);
