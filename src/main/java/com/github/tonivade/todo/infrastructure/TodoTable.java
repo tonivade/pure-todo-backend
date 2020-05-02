@@ -13,7 +13,7 @@ import com.github.tonivade.purefun.data.NonEmptyList;
 
 import java.sql.SQLException;
 
-public class TodoTable implements Table4<Integer, String, Integer, Boolean> {
+public final class TodoTable implements Table4<Integer, String, Integer, Boolean> {
 
   public final Field<Integer> ID = Field.of("id");
   public final Field<String> TITLE = Field.of("title");

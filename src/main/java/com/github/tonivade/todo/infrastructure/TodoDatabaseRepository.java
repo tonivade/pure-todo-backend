@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 
 import static java.util.Objects.requireNonNull;
 
-public class TodoDatabaseRepository implements TodoRepository<Task.µ> {
+public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
 
   private final TodoDAO dao;
   private final DataSource dataSource;

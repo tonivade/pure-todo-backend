@@ -46,6 +46,7 @@ public record Config(Server server, Database database) {
           Server::new);
     }
   }
+
   public record Database(String url, String user, String password) {
 
     public Database {

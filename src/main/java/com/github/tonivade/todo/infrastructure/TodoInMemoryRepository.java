@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static com.github.tonivade.purefun.effect.Task.exec;
 import static com.github.tonivade.purefun.effect.Task.task;
 
-public class TodoInMemoryRepository implements TodoRepository<Task.µ> {
+public final class TodoInMemoryRepository implements TodoRepository<Task.µ> {
 
   private final AtomicInteger counter = new AtomicInteger();
   private final Map<Integer, Todo> map = new ConcurrentHashMap<>();

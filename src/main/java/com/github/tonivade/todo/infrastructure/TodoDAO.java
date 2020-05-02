@@ -15,7 +15,7 @@ import com.github.tonivade.purefun.type.Option;
 
 import java.sql.SQLException;
 
-public class TodoDAO {
+public final class TodoDAO {
 
   private static TodoTable TODO = new TodoTable();
 

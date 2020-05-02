@@ -20,7 +20,7 @@ import static com.github.tonivade.zeromock.api.Matchers.options;
 import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
 
-public class Application {
+public final class Application {
 
   public static void main(String[] args) {
     var config = Config.load("application.toml").getOrElseThrow();

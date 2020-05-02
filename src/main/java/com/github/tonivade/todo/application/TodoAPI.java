@@ -27,7 +27,7 @@ import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 import static java.util.Objects.requireNonNull;
 
-public class TodoAPI {
+public final class TodoAPI {
 
   private final TodoRepository<Task.µ> repository;
 
