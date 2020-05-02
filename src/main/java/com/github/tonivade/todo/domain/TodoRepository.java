@@ -9,6 +9,7 @@ import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Unit;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
 public interface TodoRepository<F extends Kind> {
@@ -21,4 +22,20 @@ public interface TodoRepository<F extends Kind> {
   Higher1<F, Option<Todo>> update(Todo todo);
   Higher1<F, Unit> deleteAll();
   Higher1<F, Unit> delete(Id id);
+
+  default Higher1<F, Option<Todo>> updateTitle(Id id, String title) {
+    return For.with(monad())
+        .andThen(() -> find(id))
+        .map(option -> option.map(todo -> todo.withTitle(title)))
+        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
+        .run();
+  }
+
+  default Higher1<F, Option<Todo>> updateOrder(Id id, int order) {
+    return For.with(monad())
+        .andThen(() -> find(id))
+        .map(option -> option.map(todo -> todo.withOrder(order)))
+        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
+        .run();
+  }
 }

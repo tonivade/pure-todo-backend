@@ -6,7 +6,6 @@ package com.github.tonivade.todo.domain;
 
 import com.github.tonivade.purefun.type.Option;
 
-import static com.github.tonivade.purefun.Producer.cons;
 import static java.util.Objects.requireNonNull;
 
 public record Todo(Option<Id> id, Title title, Option<Order> order, State state) {
@@ -44,8 +43,16 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
     return new Todo(Option.some(new Id(id)), title, order, State.NOT_COMPLETED);
   }
 
+  public Todo withTitle(String title) {
+    return new Todo(id, new Title(title), order, state);
+  }
+
+  public Todo withOrder(int order) {
+    return new Todo(id, title, Option.some(new Order(order)), state);
+  }
+
   public Integer getId() {
-    return id.fold(cons(null), Id::value);
+    return id.map(Id::value).getOrElseNull();
   }
 
   public String getTitle() {
@@ -53,7 +60,7 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
   }
 
   public Integer getOrder() {
-    return order.fold(cons(null), Order::value);
+    return order.map(Order::value).getOrElseNull();
   }
 
   public boolean isCompleted() {

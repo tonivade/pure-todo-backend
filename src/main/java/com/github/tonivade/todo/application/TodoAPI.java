@@ -5,6 +5,7 @@
 package com.github.tonivade.todo.application;
 
 import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.UIO;
@@ -20,8 +21,9 @@ import com.github.tonivade.zeromock.api.Serializers;
 import java.util.NoSuchElementException;
 
 import static com.github.tonivade.purefun.Function1.cons;
-import static com.github.tonivade.purefun.effect.Task.task;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
+import static com.github.tonivade.zeromock.api.Extractors.extract;
+import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
@@ -41,6 +43,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodo(request)
+        .map(TodoDTO::toDomain)
         .flatMap(todo -> repository.create(todo).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::created))
         .map(contentJson().andThen(enableCors()));
@@ -48,7 +51,26 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodo(request)
+        .map(TodoDTO::toDomain)
         .flatMap(todo -> repository.update(todo).fix1(Task::narrowK))
+        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
+        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
+        .map(contentJson().andThen(enableCors()));
+  }
+
+  public UIO<HttpResponse> updateTitle(HttpRequest request) {
+    return getIdAndTitle(request)
+        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
+            (id, title) -> repository.updateTitle(id, title).fix1(Task::narrowK)))
+        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
+        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
+        .map(contentJson().andThen(enableCors()));
+  }
+
+  public UIO<HttpResponse> updateOrder(HttpRequest request) {
+    return getIdAndOrder(request)
+        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
+            (id, order) -> repository.updateOrder(id, order).fix1(Task::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
         .map(contentJson().andThen(enableCors()));
@@ -62,6 +84,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> find(HttpRequest request) {
     return getId(request)
+        .map(Id::new)
         .flatMap(id -> repository.find(id).fix1(Task::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok))
@@ -70,6 +93,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
+        .map(Id::new)
         .flatMap(id -> repository.delete(id).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), cons(Responses.ok()))
         .map(contentJson().andThen(enableCors()));
@@ -81,16 +105,30 @@ public final class TodoAPI {
         .map(contentJson().andThen(enableCors()));
   }
 
-  private Task<Todo> getTodo(HttpRequest request) {
+  private Task<TodoDTO> getTodo(HttpRequest request) {
     return Task.task(request::body)
-        .map(jsonToObject(TodoDTO.class))
-        .map(TodoDTO::toDomain);
+        .map(jsonToObject(TodoDTO.class));
   }
 
-  private Task<Id> getId(HttpRequest request) {
-    return task(() -> request.pathParam(0))
-        .map(Integer::parseInt)
-        .map(Id::new);
+  private Task<Integer> getId(HttpRequest request) {
+    return Task.pure(request).map(pathParam(0))
+        .map(Integer::parseInt);
+  }
+
+  private Task<String> getTitle(HttpRequest request) {
+    return Task.pure(request).map(extract("$.title"));
+  }
+
+  private Task<Integer> getOrder(HttpRequest request) {
+    return Task.pure(request).map(extract("$.order"));
+  }
+
+  private Task<Tuple2<Integer, String>> getIdAndTitle(HttpRequest request) {
+    return Task.map2(getId(request), getTitle(request), Tuple2::of);
+  }
+
+  private Task<Tuple2<Integer, Integer>> getIdAndOrder(HttpRequest request) {
+    return Task.map2(getId(request), getOrder(request), Tuple2::of);
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
