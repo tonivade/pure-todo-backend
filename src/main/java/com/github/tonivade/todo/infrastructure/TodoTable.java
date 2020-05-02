@@ -4,14 +4,12 @@
  */
 package com.github.tonivade.todo.infrastructure;
 
+import com.github.tonivade.puredbc.Row;
 import com.github.tonivade.puredbc.sql.Field;
-import com.github.tonivade.puredbc.sql.Row;
 import com.github.tonivade.puredbc.sql.Table4;
 import com.github.tonivade.purefun.Tuple;
 import com.github.tonivade.purefun.Tuple4;
 import com.github.tonivade.purefun.data.NonEmptyList;
-
-import java.sql.SQLException;
 
 public final class TodoTable implements Table4<Integer, String, Integer, Boolean> {
 
@@ -21,7 +19,7 @@ public final class TodoTable implements Table4<Integer, String, Integer, Boolean
   public final Field<Boolean> COMPLETED = Field.of("completed");
 
   @Override
-  public Tuple4<Integer, String, Integer, Boolean> asTuple(Row row) throws SQLException {
+  public Tuple4<Integer, String, Integer, Boolean> asTuple(Row row) {
     return Tuple.of(
         row.getInteger(ID),
         row.getString(TITLE),

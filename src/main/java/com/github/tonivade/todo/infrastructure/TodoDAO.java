@@ -5,15 +5,13 @@
 package com.github.tonivade.todo.infrastructure;
 
 import com.github.tonivade.puredbc.PureDBC;
-import com.github.tonivade.puredbc.sql.Row;
+import com.github.tonivade.puredbc.Row;
 import com.github.tonivade.puredbc.sql.SQL;
 import com.github.tonivade.puredbc.sql.SQL1;
 import com.github.tonivade.puredbc.sql.SQL2;
 import com.github.tonivade.puredbc.sql.SQL4;
 import com.github.tonivade.purefun.Unit;
 import com.github.tonivade.purefun.type.Option;
-
-import java.sql.SQLException;
 
 public final class TodoDAO {
 
@@ -66,7 +64,7 @@ public final class TodoDAO {
     return PureDBC.update(DELETE_BY_ID.bind(id));
   }
 
-  private TodoEntity toEntity(Row row) throws SQLException {
+  private TodoEntity toEntity(Row row) {
     return new TodoEntity(
         row.getInteger(TODO.ID),
         row.getString(TODO.TITLE),
