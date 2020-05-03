@@ -15,9 +15,9 @@ import com.github.tonivade.purefun.type.Option;
 
 public final class TodoDAO {
 
-  private static TodoTable TODO = new TodoTable();
+  private static final TodoTable TODO = new TodoTable();
 
-  private static SQL CREATE =
+  private static final SQL CREATE =
       SQL.sql("""
               create table todo (
                 id identity not null,
@@ -26,13 +26,13 @@ public final class TodoDAO {
                 completed int not null default 0,
                 primary key (id))
               """);
-  private static SQL2<String, Integer> INSERT_TODO = SQL.insert(TODO).values(TODO.TITLE, TODO.ORDER);
-  private static SQL4<String, Integer, Boolean, Integer> UPDATE_TODO =
+  private static final SQL2<String, Integer> INSERT_TODO = SQL.insert(TODO).values(TODO.TITLE, TODO.ORDER);
+  private static final SQL4<String, Integer, Boolean, Integer> UPDATE_TODO =
       SQL.update(TODO).set(TODO.TITLE, TODO.ORDER, TODO.COMPLETED).where(TODO.ID.eq());
-  private static SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
-  private static SQL1<Integer> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
-  private static SQL DELETE_ALL = SQL.delete(TODO);
-  private static SQL1<Integer> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
+  private static final SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
+  private static final SQL1<Integer> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
+  private static final SQL DELETE_ALL = SQL.delete(TODO);
+  private static final SQL1<Integer> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
 
   public PureDBC<Unit> create() {
     return PureDBC.update(CREATE);
@@ -45,7 +45,14 @@ public final class TodoDAO {
   }
 
   public PureDBC<Unit> update(TodoEntity entity) {
-    return PureDBC.update(UPDATE_TODO.bind(entity.title(), entity.order(), entity.completed(), entity.id()));
+    return PureDBC.update(
+        UPDATE_TODO.bind(
+            entity.title(),
+            entity.order(),
+            entity.completed(),
+            entity.id()
+        )
+    );
   }
 
   public PureDBC<Iterable<TodoEntity>> findAll() {
