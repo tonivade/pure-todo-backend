@@ -41,7 +41,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodo(request)
-        .map(TodoDTO::toDomain)
+        .map(TodoDTO::toDraft)
         .flatMap(todo -> repository.create(todo).fix1(Task::narrowK))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::created));
   }

@@ -17,13 +17,14 @@ public record TodoDTO(Integer id, String title, Integer order, Boolean completed
   private static final String BASE_URL = "https://tonivade.es/todo/";
 
   public Todo toDomain() {
-    if (nonNull(id)) {
-      return Validation.map4(
-          requirePositive(id),
-          requireNonEmpty(title),
-          requirePositive(order),
-          requireNonNull(completed), Todo::create).getOrElseThrow();
-    }
+    return Validation.map4(
+        requirePositive(id),
+        requireNonEmpty(title),
+        requirePositive(order),
+        requireNonNull(completed), Todo::create).getOrElseThrow();
+  }
+
+  public Todo toDraft() {
     if (nonNull(order)) {
       return Validation.map2(
           requireNonEmpty(title),

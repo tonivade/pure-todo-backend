@@ -6,6 +6,7 @@ package com.github.tonivade.todo;
 
 import com.github.tonivade.purecfg.PureCFG;
 import com.github.tonivade.purefun.type.Validation;
+import com.github.tonivade.purefun.type.Validation.Result;
 
 import static com.github.tonivade.purecfg.PureCFG.map2;
 import static com.github.tonivade.purecfg.PureCFG.map3;
@@ -23,7 +24,7 @@ public record Config(Server server, Database database) {
     checkNonNull(database);
   }
 
-  public static Validation<Validation.Result<String>, Config> load(String file) {
+  public static Validation<Result<String>, Config> load(String file) {
     return map2(
         readConfig("server", Server.load()),
         readConfig("database", Database.load()),
