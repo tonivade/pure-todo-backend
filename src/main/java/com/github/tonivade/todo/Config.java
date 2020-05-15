@@ -13,13 +13,14 @@ import static com.github.tonivade.purecfg.PureCFG.readConfig;
 import static com.github.tonivade.purecfg.PureCFG.readInt;
 import static com.github.tonivade.purecfg.PureCFG.readString;
 import static com.github.tonivade.purecfg.Source.fromToml;
-import static java.util.Objects.requireNonNull;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.Precondition.checkRange;
 
 public record Config(Server server, Database database) {
 
   public Config {
-    requireNonNull(server);
-    requireNonNull(database);
+    checkNonNull(server);
+    checkNonNull(database);
   }
 
   public static Validation<Validation.Result<String>, Config> load(String file) {
@@ -32,11 +33,9 @@ public record Config(Server server, Database database) {
   public record Server(String host, Integer port) {
 
     public Server {
-      requireNonNull(host);
-      requireNonNull(port);
-      if (port < 1024 || port > 65535) {
-        throw new IllegalArgumentException("port out of ranges: " + port);
-      }
+      checkNonNull(host);
+      checkNonNull(port);
+      checkRange(port, 1024, 65535);
     }
 
     public static PureCFG<Server> load() {
@@ -50,9 +49,9 @@ public record Config(Server server, Database database) {
   public record Database(String url, String user, String password) {
 
     public Database {
-      requireNonNull(url);
-      requireNonNull(user);
-      requireNonNull(password);
+      checkNonNull(url);
+      checkNonNull(user);
+      checkNonNull(password);
     }
 
     public static PureCFG<Database> load() {

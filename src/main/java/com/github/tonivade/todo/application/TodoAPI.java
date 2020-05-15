@@ -24,16 +24,15 @@ import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.extract;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
-import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
-import static java.util.Objects.requireNonNull;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
 public final class TodoAPI {
 
   private final TodoRepository<Task.µ> repository;
 
   public TodoAPI(TodoRepository<Task.µ> repository) {
-    this.repository = requireNonNull(repository);
+    this.repository = checkNonNull(repository);
   }
 
   public UIO<HttpResponse> cors(HttpRequest request) {

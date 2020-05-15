@@ -4,10 +4,10 @@
  */
 package com.github.tonivade.todo.domain;
 
+import static com.github.tonivade.purefun.Precondition.checkPositive;
+
 public record Order(int value) {
   public Order {
-    if (value < 1) {
-      throw new IllegalArgumentException("order must be a positive value");
-    }
+    checkPositive(value, "order must be a positive value");
   }
 }

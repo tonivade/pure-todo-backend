@@ -19,7 +19,7 @@ import com.github.tonivade.todo.domain.TodoRepository;
 
 import javax.sql.DataSource;
 
-import static java.util.Objects.requireNonNull;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
 public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
 
@@ -27,8 +27,8 @@ public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   private final DataSource dataSource;
 
   public TodoDatabaseRepository(TodoDAO dao, DataSource dataSource) {
-    this.dao = requireNonNull(dao);
-    this.dataSource = requireNonNull(dataSource);
+    this.dao = checkNonNull(dao);
+    this.dataSource = checkNonNull(dataSource);
   }
 
   @Override

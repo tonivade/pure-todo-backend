@@ -4,13 +4,12 @@
  */
 package com.github.tonivade.todo.domain;
 
-import static java.util.Objects.requireNonNull;
+import static com.github.tonivade.purefun.Precondition.checkNonEmpty;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
 public record Title(String value) {
   public Title {
-    requireNonNull(value, "title cannot be null");
-    if (value.isEmpty()) {
-      throw new IllegalArgumentException("title cannot be empty");
-    }
+    checkNonNull(value, "title cannot be null");
+    checkNonEmpty(value, "title cannot be empty");
   }
 }
