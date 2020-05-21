@@ -5,11 +5,11 @@
 package com.github.tonivade.todo.infrastructure;
 
 import com.github.tonivade.puredbc.PureDBC;
-import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Unit;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
-public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
+public final class TodoDatabaseRepository implements TodoRepository<Task_> {
 
   private final TodoDAO dao;
   private final DataSource dataSource;
@@ -32,12 +32,12 @@ public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   }
 
   @Override
-  public Monad<Task.µ> monad() {
+  public Monad<Task_> monad() {
     return TaskInstances.monad();
   }
 
   @Override
-  public Higher1<Task.µ, Todo> create(Todo todo) {
+  public Task<Todo> create(Todo todo) {
     return PureDBC.pure(todo)
         .map(TodoEntity::fromDomain)
         .flatMap(dao::insert)
@@ -46,7 +46,7 @@ public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   }
 
   @Override
-  public Higher1<Task.µ, Sequence<Todo>> findAll() {
+  public Task<Sequence<Todo>> findAll() {
     return dao.findAll()
         .<Sequence<TodoEntity>>map(ImmutableList::from)
         .map(seq -> seq.map(TodoEntity::toDomain))
@@ -54,14 +54,14 @@ public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   }
 
   @Override
-  public Higher1<Task.µ, Option<Todo>> find(Id id) {
+  public Task<Option<Todo>> find(Id id) {
     return dao.find(id.value())
         .map(option -> option.map(TodoEntity::toDomain))
         .safeRunIO(dataSource);
   }
 
   @Override
-  public Higher1<Task.µ, Option<Todo>> update(Todo todo) {
+  public Task<Option<Todo>> update(Todo todo) {
     return dao.find(todo.getId()).flatMap(
         option -> {
           if (option.isPresent()) {
@@ -72,12 +72,12 @@ public final class TodoDatabaseRepository implements TodoRepository<Task.µ> {
   }
 
   @Override
-  public Higher1<Task.µ, Unit> deleteAll() {
+  public Task<Unit> deleteAll() {
     return dao.deleteAll().safeRunIO(dataSource);
   }
 
   @Override
-  public Higher1<Task.µ, Unit> delete(Id id) {
+  public Task<Unit> delete(Id id) {
     return dao.delete(id.value()).safeRunIO(dataSource);
   }
 }

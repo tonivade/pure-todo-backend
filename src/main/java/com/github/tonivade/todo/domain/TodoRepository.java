@@ -4,26 +4,26 @@
  */
 package com.github.tonivade.todo.domain;
 
-import com.github.tonivade.purefun.Higher1;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Unit;
+import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.For;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public interface TodoRepository<F extends Kind> {
+public interface TodoRepository<F extends Witness> {
 
   Monad<F> monad();
 
-  Higher1<F, Todo> create(Todo todo);
-  Higher1<F, Sequence<Todo>> findAll();
-  Higher1<F, Option<Todo>> find(Id id);
-  Higher1<F, Option<Todo>> update(Todo todo);
-  Higher1<F, Unit> deleteAll();
-  Higher1<F, Unit> delete(Id id);
+  Kind<F, Todo> create(Todo todo);
+  Kind<F, Sequence<Todo>> findAll();
+  Kind<F, Option<Todo>> find(Id id);
+  Kind<F, Option<Todo>> update(Todo todo);
+  Kind<F, Unit> deleteAll();
+  Kind<F, Unit> delete(Id id);
 
-  default Higher1<F, Option<Todo>> updateTitle(Id id, String title) {
+  default Kind<F, Option<Todo>> updateTitle(Id id, String title) {
     return For.with(monad())
         .andThen(() -> find(id))
         .map(option -> option.map(todo -> todo.withTitle(title)))
@@ -31,7 +31,7 @@ public interface TodoRepository<F extends Kind> {
         .run();
   }
 
-  default Higher1<F, Option<Todo>> updateOrder(Id id, int order) {
+  default Kind<F, Option<Todo>> updateOrder(Id id, int order) {
     return For.with(monad())
         .andThen(() -> find(id))
         .map(option -> option.map(todo -> todo.withOrder(order)))

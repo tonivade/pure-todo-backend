@@ -8,6 +8,8 @@ import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Tuple2;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.effect.TaskOf;
+import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
@@ -29,9 +31,9 @@ import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
 public final class TodoAPI {
 
-  private final TodoRepository<Task.µ> repository;
+  private final TodoRepository<Task_> repository;
 
-  public TodoAPI(TodoRepository<Task.µ> repository) {
+  public TodoAPI(TodoRepository<Task_> repository) {
     this.repository = checkNonNull(repository);
   }
 
@@ -42,14 +44,14 @@ public final class TodoAPI {
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodo(request)
         .map(TodoDTO::toDraft)
-        .flatMap(todo -> repository.create(todo).fix1(Task::narrowK))
+        .flatMap(todo -> repository.create(todo).fix(TaskOf::narrowK))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::created));
   }
 
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodo(request)
         .map(TodoDTO::toDomain)
-        .flatMap(todo -> repository.update(todo).fix1(Task::narrowK))
+        .flatMap(todo -> repository.update(todo).fix(TaskOf::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -57,7 +59,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> updateTitle(HttpRequest request) {
     return getIdAndTitle(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, title) -> repository.updateTitle(id, title).fix1(Task::narrowK)))
+            (id, title) -> repository.updateTitle(id, title).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -65,20 +67,20 @@ public final class TodoAPI {
   public UIO<HttpResponse> updateOrder(HttpRequest request) {
     return getIdAndOrder(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, order) -> repository.updateOrder(id, order).fix1(Task::narrowK)))
+            (id, order) -> repository.updateOrder(id, order).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
-    return repository.findAll().fix1(Task::narrowK)
+    return repository.findAll().fix(TaskOf::narrowK)
         .fold(fromError(Responses::badRequest), fromSequence(Responses::ok));
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
     return getId(request)
         .map(Id::new)
-        .flatMap(id -> repository.find(id).fix1(Task::narrowK))
+        .flatMap(id -> repository.find(id).fix(TaskOf::narrowK))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -86,12 +88,12 @@ public final class TodoAPI {
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .map(Id::new)
-        .flatMap(id -> repository.delete(id).fix1(Task::narrowK))
+        .flatMap(id -> repository.delete(id).fix(TaskOf::narrowK))
         .fold(fromError(Responses::badRequest), cons(Responses.ok()));
   }
 
   public UIO<HttpResponse> deleteAll(HttpRequest request) {
-     return repository.deleteAll().fix1(Task::narrowK)
+     return repository.deleteAll().fix(TaskOf::narrowK)
         .fold(fromError(Responses::badRequest), cons(Responses.ok()));
   }
 
