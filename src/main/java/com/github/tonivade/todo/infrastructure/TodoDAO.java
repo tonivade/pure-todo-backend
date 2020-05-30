@@ -26,12 +26,12 @@ public final class TodoDAO {
                 completed int not null default 0,
                 primary key (id))
               """);
-  private static final SQL2<String, Integer> INSERT_TODO = SQL.insert(TODO).values(TODO.TITLE, TODO.ORDER);
+  private static final SQL2<String, Integer> INSERT_TODO = SQL.insertInto(TODO).values(TODO.TITLE, TODO.ORDER);
   private static final SQL4<String, Integer, Boolean, Integer> UPDATE_TODO =
       SQL.update(TODO).set(TODO.TITLE, TODO.ORDER, TODO.COMPLETED).where(TODO.ID.eq());
   private static final SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
   private static final SQL1<Integer> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
-  private static final SQL DELETE_ALL = SQL.delete(TODO);
+  private static final SQL DELETE_ALL = SQL.deleteFrom(TODO);
   private static final SQL1<Integer> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
 
   public PureDBC<Unit> create() {
@@ -40,8 +40,7 @@ public final class TodoDAO {
 
   public PureDBC<Integer> insert(TodoEntity entity) {
     return PureDBC.updateWithKeys(
-        INSERT_TODO.bind(entity.title(), entity.order()),
-        row -> row.getInteger(TODO.ID)).map(Option::get);
+        INSERT_TODO.bind(entity.title(), entity.order()), TODO.ID).map(Option::get);
   }
 
   public PureDBC<Unit> update(TodoEntity entity) {
