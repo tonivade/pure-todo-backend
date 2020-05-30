@@ -4,10 +4,9 @@
  */
 package com.github.tonivade.todo.domain;
 
-import com.github.tonivade.purefun.type.Option;
-
-import static com.github.tonivade.purefun.Precondition.check;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
+
+import com.github.tonivade.purefun.type.Option;
 
 public record Todo(Option<Id> id, Title title, Option<Order> order, State state) {
 
@@ -16,8 +15,12 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
     checkNonNull(title, "title cannot be null");
     checkNonNull(order, "order cannot be null");
     checkNonNull(state, "state cannot be null");
-    check(() -> state == State.DRAFT && id.isPresent(), () -> "draft cannot have and non empty id");
-    check(() -> state != State.DRAFT && id.isEmpty(), () -> "todo cannot have and empty id");
+    if (state.isDraft() && id.isPresent()) {
+      throw new IllegalArgumentException("draft cannot have and non empty id");
+    }
+    if (!state.isDraft() && id.isEmpty()) {
+      throw new IllegalArgumentException("todo cannot have and empty id");
+    }
   }
 
   public static Todo draft(String title) {
@@ -61,7 +64,7 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
   }
 
   public boolean isCompleted() {
-    return state == State.COMPLETED;
+    return state.isCompleted();
   }
 }
 

@@ -5,5 +5,41 @@
 package com.github.tonivade.todo.domain;
 
 public enum State {
-  DRAFT, COMPLETED, NOT_COMPLETED
+  DRAFT() {
+    @Override
+    public boolean isDraft() {
+      return true;
+    }
+    
+    @Override
+    public boolean isCompleted() {
+      return false;
+    }
+  },
+  COMPLETED() {
+    @Override
+    public boolean isDraft() {
+      return false;
+    }
+    
+    @Override
+    public boolean isCompleted() {
+      return true;
+    }
+  },
+  NOT_COMPLETED() {
+    @Override
+    public boolean isDraft() {
+      return false;
+    }
+    
+    @Override
+    public boolean isCompleted() {
+      return false;
+    }
+  };
+
+  public abstract boolean isDraft();
+
+  public abstract boolean isCompleted();
 }

@@ -20,27 +20,26 @@ tasks.withType(JavaCompile).each {
   it.options.compilerArgs.addAll('--enable-preview')
 }
 
-tasks.withType(Test).each {
-  it.jvmArgs.addAll('--enable-preview')
-}
-
 test {
   useJUnitPlatform()
+  
+  jvmArgs(['--enable-preview'])
 }
 
 dependencies {
   implementation 'com.github.tonivade:purefun-monad:2.0'
   implementation 'com.github.tonivade:purefun-effect:2.0'
   implementation 'com.github.tonivade:purefun-instances:2.0'
-  implementation 'com.github.tonivade:zeromock-server:0.13.0-SNAPSHOT'
-  implementation 'com.github.tonivade:zeromock-pure:0.13.0-SNAPSHOT'
+  implementation 'com.github.tonivade:zeromock-server:0.13.0'
+  implementation 'com.github.tonivade:zeromock-pure:0.13.0'
   implementation 'com.github.tonivade:puredbc:0.1.0-SNAPSHOT'
   implementation 'com.github.tonivade:purecfg:0.1.0-SNAPSHOT'
   implementation 'com.google.code.gson:gson:2.8.5'
   implementation 'com.zaxxer:HikariCP:3.4.2'
   implementation 'org.flywaydb:flyway-core:5.2.4'
   runtime 'com.h2database:h2:1.4.200'
-  testImplementation 'com.github.tonivade:zeromock-junit5:0.13.0-SNAPSHOT'
+  testImplementation 'com.github.tonivade:zeromock-junit5:0.13.0'
+  testImplementation 'com.github.tonivade:zeromock-client:0.13.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
   testImplementation 'org.junit.platform:junit-platform-runner:1.6.2'
   testImplementation 'org.mockito:mockito-core:3.3.3'
