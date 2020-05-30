@@ -4,16 +4,6 @@
  */
 package com.github.tonivade.todo;
 
-import com.github.tonivade.todo.application.TodoAPI;
-import com.github.tonivade.todo.infrastructure.TodoDAO;
-import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
-import com.github.tonivade.zeromock.api.HttpUIOService;
-import com.github.tonivade.zeromock.server.UIOMockHttpServer;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
-
 import static com.github.tonivade.purefun.Matcher1.isNotNull;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
@@ -25,11 +15,38 @@ import static com.github.tonivade.zeromock.api.Matchers.patch;
 import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
 
+import javax.sql.DataSource;
+
+import com.github.tonivade.purefun.effect.UIO_;
+import com.github.tonivade.todo.application.TodoAPI;
+import com.github.tonivade.todo.infrastructure.TodoDAO;
+import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
+import com.github.tonivade.zeromock.api.HttpUIOService;
+import com.github.tonivade.zeromock.server.MockHttpServerK;
+import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 public final class Application {
 
   public static void main(String[] args) {
-    var config = Config.load("application.toml").getOrElseThrow();
+    var config = loadConfig();
 
+    buildServer(config, buildService(config)).start();
+  }
+
+  protected static Config loadConfig() {
+    return Config.load("application.toml").getOrElseThrow();
+  }
+
+  protected static MockHttpServerK<UIO_> buildServer(Config config, HttpUIOService service) {
+    var server = UIOMockHttpServer.async()
+        .host(config.server().host())
+        .port(config.server().port()).build();
+    return server.mount("/todo", service.build());
+  }
+
+  protected static HttpUIOService buildService(Config config) {
     var dao = new TodoDAO();
     var dataSource = createDataSource(config);
 
@@ -37,7 +54,8 @@ public final class Application {
 
     var repository = new TodoDatabaseRepository(dao, dataSource);
     var api = new TodoAPI(repository);
-    var service = new HttpUIOService("todo backend")
+
+    return new HttpUIOService("todo backend")
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)
         .when(post("/")).then(api::create)
@@ -50,12 +68,7 @@ public final class Application {
         .when(delete("/")).then(api::deleteAll)
         .when(options()).then(api::cors)
         .postFilter(enableCors())
-        .postFilter(contentJson())
-        .build();
-    var server = UIOMockHttpServer.async()
-        .host(config.server().host())
-        .port(config.server().port()).build();
-    server.mount("/todo", service).start();
+        .postFilter(contentJson());
   }
 
   private static DataSource createDataSource(Config config) {
