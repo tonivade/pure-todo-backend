@@ -19,7 +19,7 @@ public final class TodoDAO {
 
   private static final SQL CREATE =
       SQL.sql("""
-              create table todo (
+              create table if not exists todo (
                 id identity not null,
                 title varchar(100) not null,
                 position int,
