@@ -23,11 +23,11 @@ public final class TodoDAO {
                 id identity not null,
                 title varchar(100) not null,
                 position int,
-                completed int not null default 0,
+                completed bit not null default 0,
                 primary key (id))
               """);
   private static final SQL2<String, Integer> INSERT_TODO = SQL.insertInto(TODO).values(TODO.TITLE, TODO.ORDER);
-  private static final SQL4<String, Integer, Integer, Long> UPDATE_TODO =
+  private static final SQL4<String, Integer, Boolean, Long> UPDATE_TODO =
       SQL.update(TODO).set(TODO.TITLE, TODO.ORDER, TODO.COMPLETED).where(TODO.ID.eq());
   private static final SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
   private static final SQL1<Long> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
@@ -75,6 +75,6 @@ public final class TodoDAO {
         row.getLong(TODO.ID),
         row.getString(TODO.TITLE),
         row.getInteger(TODO.ORDER),
-        row.getInteger(TODO.COMPLETED));
+        row.getBoolean(TODO.COMPLETED));
   }
 }
