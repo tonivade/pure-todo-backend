@@ -6,10 +6,10 @@ package com.github.tonivade.todo.infrastructure;
 
 import com.github.tonivade.todo.domain.Todo;
 
-public record TodoEntity(Long id, String title, Integer order, Boolean completed) {
+public record TodoEntity(Long id, String title, Integer order, Integer completed) {
 
   public Todo toDomain() {
-    return Todo.create(id.intValue(), title, order, completed);
+    return Todo.create(id.intValue(), title, order, completed != 0 ? true : false);
   }
 
   public static TodoEntity fromDomain(Todo todo) {
@@ -17,6 +17,6 @@ public record TodoEntity(Long id, String title, Integer order, Boolean completed
         todo.getId() != null ? todo.getId().longValue() : null,
         todo.getTitle(),
         todo.getOrder(),
-        todo.isCompleted());
+        todo.isCompleted() ? 1 : 0);
   }
 }

@@ -31,7 +31,7 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
     return new Todo(Option.none(), new Title(title), Option.some(new Order(order)), State.DRAFT);
   }
 
-  public static Todo create(int id, String title, int order, boolean completed) {
+  public static Todo create(Integer id, String title, Integer order, Boolean completed) {
     return new Todo(
         Option.of(id).map(Id::new),
         new Title(title),
@@ -49,6 +49,10 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
 
   public Todo withOrder(int order) {
     return new Todo(id, title, Option.some(new Order(order)), state);
+  }
+
+  public Todo withCompleted(boolean completed) {
+    return new Todo(id, title, order, completed ? State.COMPLETED : State.NOT_COMPLETED);
   }
 
   public Integer getId() {

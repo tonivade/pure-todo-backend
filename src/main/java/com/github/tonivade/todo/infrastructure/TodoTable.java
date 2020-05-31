@@ -11,20 +11,20 @@ import com.github.tonivade.purefun.Tuple;
 import com.github.tonivade.purefun.Tuple4;
 import com.github.tonivade.purefun.data.NonEmptyList;
 
-public final class TodoTable implements Table4<Long, String, Integer, Boolean> {
+public final class TodoTable implements Table4<Long, String, Integer, Integer> {
 
   public final Field<Long> ID = Field.of("id");
   public final Field<String> TITLE = Field.of("title");
   public final Field<Integer> ORDER = Field.of("position");
-  public final Field<Boolean> COMPLETED = Field.of("completed");
+  public final Field<Integer> COMPLETED = Field.of("completed");
 
   @Override
-  public Tuple4<Long, String, Integer, Boolean> asTuple(Row row) {
+  public Tuple4<Long, String, Integer, Integer> asTuple(Row row) {
     return Tuple.of(
         row.getLong(ID),
         row.getString(TITLE),
         row.getInteger(ORDER),
-        row.getBoolean(COMPLETED));
+        row.getInteger(COMPLETED));
   }
 
   @Override

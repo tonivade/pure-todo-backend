@@ -38,4 +38,12 @@ public interface TodoRepository<F extends Witness> {
         .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
         .run();
   }
+
+  default Kind<F, Option<Todo>> updateCompleted(Id id, boolean completed) {
+    return For.with(monad())
+        .andThen(() -> find(id))
+        .map(option -> option.map(todo -> todo.withCompleted(completed)))
+        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
+        .run();
+  }
 }

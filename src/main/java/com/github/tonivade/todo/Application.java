@@ -9,6 +9,7 @@ import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
+import static com.github.tonivade.zeromock.api.Matchers.header;
 import static com.github.tonivade.zeromock.api.Matchers.jsonPath;
 import static com.github.tonivade.zeromock.api.Matchers.options;
 import static com.github.tonivade.zeromock.api.Matchers.patch;
@@ -22,6 +23,8 @@ import com.github.tonivade.todo.application.TodoAPI;
 import com.github.tonivade.todo.infrastructure.TodoDAO;
 import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
 import com.github.tonivade.zeromock.api.HttpUIOService;
+import com.github.tonivade.zeromock.api.PostFilter;
+import com.github.tonivade.zeromock.api.PreFilter;
 import com.github.tonivade.zeromock.server.MockHttpServerK;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.zaxxer.hikari.HikariConfig;
@@ -56,19 +59,35 @@ public final class Application {
     var api = new TodoAPI(repository);
 
     return new HttpUIOService("todo backend")
+        .preFilter(PreFilter.print(System.out))
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)
         .when(post("/")).then(api::create)
         .when(put("/:id")).then(api::update)
+        .when(post("/:id")
+            .and(header("_method", "PATCH"))
+            .and(jsonPath("$.title", isNotNull())))
+          .then(api::updateTitle)
+        .when(post("/:id")
+            .and(header("_method", "PATCH"))
+            .and(jsonPath("$.order", isNotNull())))
+          .then(api::updateOrder)
+        .when(post("/:id")
+            .and(header("_method", "PATCH"))
+            .and(jsonPath("$.completed", isNotNull())))
+          .then(api::updateCompleted)
         .when(patch("/:id").and(jsonPath("$.title", isNotNull())))
           .then(api::updateTitle)
         .when(patch("/:id").and(jsonPath("$.order", isNotNull())))
           .then(api::updateOrder)
+        .when(patch("/:id").and(jsonPath("$.completed", isNotNull())))
+          .then(api::updateCompleted)
         .when(delete("/:id")).then(api::delete)
         .when(delete("/")).then(api::deleteAll)
         .when(options()).then(api::cors)
         .postFilter(enableCors())
-        .postFilter(contentJson());
+        .postFilter(contentJson())
+        .postFilter(PostFilter.print(System.out));
   }
 
   private static DataSource createDataSource(Config config) {

@@ -72,6 +72,14 @@ public final class TodoAPI {
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
 
+  public UIO<HttpResponse> updateCompleted(HttpRequest request) {
+    return getIdAndCompleted(request)
+        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
+            (id, completed) -> repository.updateCompleted(id, completed).fix(TaskOf::narrowK)))
+        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
+        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
+  }
+
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix(TaskOf::narrowK)
         .fold(fromError(Responses::badRequest), fromSequence(Responses::ok));
@@ -115,12 +123,20 @@ public final class TodoAPI {
     return Task.pure(request).map(extract("$.order"));
   }
 
+  private Task<Boolean> getCompleted(HttpRequest request) {
+    return Task.pure(request).map(extract("$.completed"));
+  }
+
   private Task<Tuple2<Integer, String>> getIdAndTitle(HttpRequest request) {
     return Task.map2(getId(request), getTitle(request), Tuple2::of);
   }
 
   private Task<Tuple2<Integer, Integer>> getIdAndOrder(HttpRequest request) {
     return Task.map2(getId(request), getOrder(request), Tuple2::of);
+  }
+
+  private Task<Tuple2<Integer, Boolean>> getIdAndCompleted(HttpRequest request) {
+    return Task.map2(getId(request), getCompleted(request), Tuple2::of);
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
