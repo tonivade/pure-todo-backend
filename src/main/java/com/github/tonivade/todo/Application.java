@@ -18,14 +18,12 @@ import static com.github.tonivade.zeromock.api.Matchers.put;
 
 import javax.sql.DataSource;
 
-import com.github.tonivade.purefun.effect.UIO_;
 import com.github.tonivade.todo.application.TodoAPI;
 import com.github.tonivade.todo.infrastructure.TodoDAO;
 import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
-import com.github.tonivade.zeromock.server.MockHttpServerK;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -42,11 +40,11 @@ public final class Application {
     return Config.load("application.toml").getOrElseThrow();
   }
 
-  protected static MockHttpServerK<UIO_> buildServer(Config config, HttpUIOService service) {
+  protected static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
     var server = UIOMockHttpServer.async()
         .host(config.server().host())
         .port(config.server().port()).build();
-    return server.mount("/todo", service.build());
+    return server.mount("/todo", service);
   }
 
   protected static HttpUIOService buildService(Config config) {
