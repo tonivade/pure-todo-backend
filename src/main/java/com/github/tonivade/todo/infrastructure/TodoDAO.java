@@ -27,18 +27,18 @@ public final class TodoDAO {
                 primary key (id))
               """);
   private static final SQL2<String, Integer> INSERT_TODO = SQL.insertInto(TODO).values(TODO.TITLE, TODO.ORDER);
-  private static final SQL4<String, Integer, Boolean, Integer> UPDATE_TODO =
+  private static final SQL4<String, Integer, Boolean, Long> UPDATE_TODO =
       SQL.update(TODO).set(TODO.TITLE, TODO.ORDER, TODO.COMPLETED).where(TODO.ID.eq());
   private static final SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
-  private static final SQL1<Integer> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
+  private static final SQL1<Long> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
   private static final SQL DELETE_ALL = SQL.deleteFrom(TODO);
-  private static final SQL1<Integer> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
+  private static final SQL1<Long> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
 
   public PureDBC<Unit> create() {
     return PureDBC.update(CREATE);
   }
 
-  public PureDBC<Integer> insert(TodoEntity entity) {
+  public PureDBC<Long> insert(TodoEntity entity) {
     return PureDBC.updateWithKeys(
         INSERT_TODO.bind(entity.title(), entity.order()), TODO.ID).map(Option::get);
   }
@@ -58,7 +58,7 @@ public final class TodoDAO {
     return PureDBC.queryIterable(FIND_ALL, this::toEntity);
   }
 
-  public PureDBC<Option<TodoEntity>> find(int id) {
+  public PureDBC<Option<TodoEntity>> find(long id) {
     return PureDBC.queryOne(FIND_BY_ID.bind(id), this::toEntity);
   }
 
@@ -66,13 +66,13 @@ public final class TodoDAO {
     return PureDBC.update(DELETE_ALL);
   }
 
-  public PureDBC<Unit> delete(int id) {
+  public PureDBC<Unit> delete(long id) {
     return PureDBC.update(DELETE_BY_ID.bind(id));
   }
 
   private TodoEntity toEntity(Row row) {
     return new TodoEntity(
-        row.getInteger(TODO.ID),
+        row.getLong(TODO.ID),
         row.getString(TODO.TITLE),
         row.getInteger(TODO.ORDER),
         row.getBoolean(TODO.COMPLETED));

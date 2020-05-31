@@ -41,6 +41,7 @@ public final class TodoDatabaseRepository implements TodoRepository<Task_> {
     return PureDBC.pure(todo)
         .map(TodoEntity::fromDomain)
         .flatMap(dao::insert)
+        .map(Long::intValue)
         .map(todo::withId)
         .safeRunIO(dataSource);
   }
