@@ -149,6 +149,26 @@ public class EndToEndTest {
     assertEquals(1, list.size());
     assertEquals(true, list.get(0).completed());
   }
+  
+  @Test
+  public void updateTitleOrderAndCompleted(UIOMockHttpServer server, UIOHttpClient client) {
+    server.mount(TODO, service);
+
+    HttpResponse response = client.request(deleteAll())
+        .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
+        .flatMap(item -> client.request(updateTitleOrderAndCompleted(item.id(), "qwert", 3, true)))
+        .andThen(client.request(getAll()))
+        .unsafeRunSync();
+    
+    assertEquals(HttpStatus.OK, response.status());
+
+    List<TodoDTO> list = parseList(response);
+    assertEquals(1, list.size());
+    TodoDTO item = list.get(0);
+    assertEquals("qwert", item.title());
+    assertEquals(3, item.order());
+    assertEquals(true, item.completed());
+  }
 
   private List<TodoDTO> parseList(HttpResponse response) {
     Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
@@ -171,6 +191,20 @@ public class EndToEndTest {
     return post(TODO)
       .withHeader("Content-type", "application/json")
       .withBody("{\"title\":\"" + title + "\"}");
+  }
+
+  private HttpRequest updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {
+    return post(TODO + "/" + id)
+      .withHeader("_method", "PATCH")
+      .withHeader("Content-type", "application/json")
+      .withBody(
+          """
+          { 
+              "title": "%s",
+              "order": %s,
+              "completed": %s
+          }
+          """.format(title, order, completed));
   }
 
   private HttpRequest updateTitle(int id, String title) {

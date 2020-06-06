@@ -4,30 +4,36 @@
  */
 package com.github.tonivade.todo.application;
 
+import static com.github.tonivade.purefun.Function1.cons;
+import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
+import static com.github.tonivade.zeromock.api.Extractors.pathParam;
+import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
+
+import java.util.NoSuchElementException;
+
 import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.Function2;
+import com.github.tonivade.purefun.Operator1;
+import com.github.tonivade.purefun.Producer;
 import com.github.tonivade.purefun.Tuple2;
+import com.github.tonivade.purefun.Tuple3;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.TaskOf;
 import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.instances.TaskInstances;
+import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
 import com.github.tonivade.zeromock.api.Bytes;
+import com.github.tonivade.zeromock.api.Extractors;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.api.Serializers;
-
-import java.util.NoSuchElementException;
-
-import static com.github.tonivade.purefun.Function1.cons;
-import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
-import static com.github.tonivade.zeromock.api.Extractors.extract;
-import static com.github.tonivade.zeromock.api.Extractors.pathParam;
-import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
 
 public final class TodoAPI {
 
@@ -56,26 +62,10 @@ public final class TodoAPI {
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
 
-  public UIO<HttpResponse> updateTitle(HttpRequest request) {
-    return getIdAndTitle(request)
+  public UIO<HttpResponse> modify(HttpRequest request) {
+    return getIdAndUpdate(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, title) -> repository.modify(id, todo -> todo.withTitle(title)).fix(TaskOf::narrowK)))
-        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
-  }
-
-  public UIO<HttpResponse> updateOrder(HttpRequest request) {
-    return getIdAndOrder(request)
-        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, order) -> repository.modify(id, todo -> todo.withOrder(order)).fix(TaskOf::narrowK)))
-        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
-  }
-
-  public UIO<HttpResponse> updateCompleted(HttpRequest request) {
-    return getIdAndCompleted(request)
-        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, completed) -> repository.modify(id, todo -> todo.withCompleted(completed)).fix(TaskOf::narrowK)))
+            (id, update) -> repository.modify(id, update::apply).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -115,28 +105,34 @@ public final class TodoAPI {
         .map(Integer::parseInt);
   }
 
-  private Task<String> getTitle(HttpRequest request) {
-    return Task.pure(request).map(extract("$.title"));
+  private Task<Option<String>> getTitle(HttpRequest request) {
+    return Task.pure(request).map(Extractors.<String>extract("$.title").liftOption());
   }
 
-  private Task<Integer> getOrder(HttpRequest request) {
-    return Task.pure(request).map(extract("$.order"));
+  private Task<Option<Integer>> getOrder(HttpRequest request) {
+    return Task.pure(request).map(Extractors.<Integer>extract("$.order").liftOption());
   }
 
-  private Task<Boolean> getCompleted(HttpRequest request) {
-    return Task.pure(request).map(extract("$.completed"));
+  private Task<Option<Boolean>> getCompleted(HttpRequest request) {
+    return Task.pure(request).map(Extractors.<Boolean>extract("$.completed").liftOption());
   }
 
-  private Task<Tuple2<Integer, String>> getIdAndTitle(HttpRequest request) {
-    return Task.map2(getId(request), getTitle(request), Tuple2::of);
+  private Task<Tuple2<Integer, Operator1<Todo>>> getIdAndUpdate(HttpRequest request) {
+    return Task.map2(getId(request), getUpdate(request), Tuple2::of);
   }
 
-  private Task<Tuple2<Integer, Integer>> getIdAndOrder(HttpRequest request) {
-    return Task.map2(getId(request), getOrder(request), Tuple2::of);
+  private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
+    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = TaskInstances.applicative()
+        .map3(
+            getTitle(request).map(toOperation(Todo::withTitle)), 
+            getOrder(request).map(toOperation(Todo::withOrder)), 
+            getCompleted(request).map(toOperation(Todo::withCompleted)), 
+            Tuple3::of).fix(TaskOf::narrowK);
+    return map3.map(tuple -> tuple.applyTo((op1, op2, op3) -> op1.andThen(op2).andThen(op3)::apply));
   }
-
-  private Task<Tuple2<Integer, Boolean>> getIdAndCompleted(HttpRequest request) {
-    return Task.map2(getId(request), getCompleted(request), Tuple2::of);
+  
+  private <T> Function1<Option<T>, Operator1<Todo>> toOperation(Function2<Todo, T, Todo> function) {
+    return value -> value.fold(Producer.cons(todo -> todo), v -> todo -> function.apply(todo, v));
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
