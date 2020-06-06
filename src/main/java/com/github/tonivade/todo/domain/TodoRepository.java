@@ -4,6 +4,8 @@
  */
 package com.github.tonivade.todo.domain;
 
+import static com.github.tonivade.purefun.type.Option.none;
+
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.Unit;
@@ -28,7 +30,7 @@ public interface TodoRepository<F extends Witness> {
     return For.with(monad())
         .andThen(() -> find(id))
         .map(option -> option.map(todo -> update.apply(todo)))
-        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
+        .flatMap(option -> option.fold(() -> monad().pure(none()), this::update))
         .run();
   }
 }
