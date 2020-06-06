@@ -5,6 +5,7 @@
 package com.github.tonivade.todo.domain;
 
 import com.github.tonivade.purefun.Kind;
+import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.Unit;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.data.Sequence;
@@ -23,26 +24,10 @@ public interface TodoRepository<F extends Witness> {
   Kind<F, Unit> deleteAll();
   Kind<F, Unit> delete(Id id);
 
-  default Kind<F, Option<Todo>> updateTitle(Id id, String title) {
+  default Kind<F, Option<Todo>> modify(Id id, Operator1<Todo> update) {
     return For.with(monad())
         .andThen(() -> find(id))
-        .map(option -> option.map(todo -> todo.withTitle(title)))
-        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
-        .run();
-  }
-
-  default Kind<F, Option<Todo>> updateOrder(Id id, int order) {
-    return For.with(monad())
-        .andThen(() -> find(id))
-        .map(option -> option.map(todo -> todo.withOrder(order)))
-        .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
-        .run();
-  }
-
-  default Kind<F, Option<Todo>> updateCompleted(Id id, boolean completed) {
-    return For.with(monad())
-        .andThen(() -> find(id))
-        .map(option -> option.map(todo -> todo.withCompleted(completed)))
+        .map(option -> option.map(todo -> update.apply(todo)))
         .flatMap(option -> option.fold(() -> monad().pure(Option.none()), this::update))
         .run();
   }

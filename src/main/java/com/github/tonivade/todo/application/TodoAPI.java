@@ -59,7 +59,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> updateTitle(HttpRequest request) {
     return getIdAndTitle(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, title) -> repository.updateTitle(id, title).fix(TaskOf::narrowK)))
+            (id, title) -> repository.modify(id, todo -> todo.withTitle(title)).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -67,7 +67,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> updateOrder(HttpRequest request) {
     return getIdAndOrder(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, order) -> repository.updateOrder(id, order).fix(TaskOf::narrowK)))
+            (id, order) -> repository.modify(id, todo -> todo.withOrder(order)).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
@@ -75,7 +75,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> updateCompleted(HttpRequest request) {
     return getIdAndCompleted(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, completed) -> repository.updateCompleted(id, completed).fix(TaskOf::narrowK)))
+            (id, completed) -> repository.modify(id, todo -> todo.withCompleted(completed)).fix(TaskOf::narrowK)))
         .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
         .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
   }
