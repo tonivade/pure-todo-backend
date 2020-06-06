@@ -204,7 +204,7 @@ public class EndToEndTest {
               "order": %s,
               "completed": %s
           }
-          """.format(title, order, completed));
+          """.formatted(title, order, completed));
   }
 
   private HttpRequest updateTitle(int id, String title) {
