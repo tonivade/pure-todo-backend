@@ -31,7 +31,6 @@ dependencies {
   implementation 'com.github.tonivade:purefun-effect:2.2-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-instances:2.2-SNAPSHOT'
   implementation 'com.github.tonivade:zeromock-server:0.14.0-SNAPSHOT'
-  implementation 'com.github.tonivade:zeromock-pure:0.14.0-SNAPSHOT'
   implementation 'com.github.tonivade:puredbc:0.2.0-SNAPSHOT'
   implementation 'com.github.tonivade:purecfg:0.2.0-SNAPSHOT'
   implementation 'com.google.code.gson:gson:2.8.5'
