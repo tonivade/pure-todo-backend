@@ -27,9 +27,9 @@ test {
 }
 
 dependencies {
-  implementation 'com.github.tonivade:purefun-monad:2.1.1'
-  implementation 'com.github.tonivade:purefun-effect:2.1.1'
-  implementation 'com.github.tonivade:purefun-instances:2.1.1'
+  implementation 'com.github.tonivade:purefun-monad:2.2-SNAPSHOT'
+  implementation 'com.github.tonivade:purefun-effect:2.2-SNAPSHOT'
+  implementation 'com.github.tonivade:purefun-instances:2.2-SNAPSHOT'
   implementation 'com.github.tonivade:zeromock-server:0.14.0-SNAPSHOT'
   implementation 'com.github.tonivade:zeromock-pure:0.14.0-SNAPSHOT'
   implementation 'com.github.tonivade:puredbc:0.2.0-SNAPSHOT'

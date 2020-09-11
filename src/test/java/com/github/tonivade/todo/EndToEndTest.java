@@ -190,7 +190,10 @@ public class EndToEndTest {
   private HttpRequest createNew(String title) {
     return post(TODO)
       .withHeader("Content-type", "application/json")
-      .withBody("{\"title\":\"" + title + "\"}");
+      .withBody(
+          """
+          {"title":"%s"}
+          """.formatted(title));
   }
 
   private HttpRequest updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {
@@ -211,20 +214,29 @@ public class EndToEndTest {
     return post(TODO + "/" + id)
       .withHeader("_method", "PATCH")
       .withHeader("Content-type", "application/json")
-      .withBody("{\"title\":\"" + title + "\"}");
+      .withBody(
+          """
+          {"title": "%s"}
+          """.formatted(title));
   }
 
   private HttpRequest updateOrder(int id, int order) {
     return post(TODO + "/" + id)
       .withHeader("_method", "PATCH")
       .withHeader("Content-type", "application/json")
-      .withBody("{\"order\":" + order + "}");
+      .withBody(
+          """
+          {"order": %s}
+          """.formatted(order));
   }
 
   private HttpRequest updateCompleted(int id, boolean completed) {
     return post(TODO + "/" + id)
       .withHeader("_method", "PATCH")
       .withHeader("Content-type", "application/json")
-      .withBody("{\"completed\":" + completed + "}");
+      .withBody(
+          """
+          {"completed": %s}
+          """.formatted(completed));
   }
 }
