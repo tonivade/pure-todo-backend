@@ -17,7 +17,7 @@ public record TodoDTO(Integer id, String title, Integer order, Boolean completed
   private static final String BASE_URL = "https://tonivade.es/todo/";
 
   public Todo toDomain() {
-    return Validation.map4(
+    return Validation.mapN(
         requirePositive(id),
         requireNonEmpty(title),
         requirePositive(order),
@@ -26,7 +26,7 @@ public record TodoDTO(Integer id, String title, Integer order, Boolean completed
 
   public Todo toDraft() {
     if (nonNull(order)) {
-      return Validation.map2(
+      return Validation.mapN(
           requireNonEmpty(title),
           requirePositive(order), Todo::draft).getOrElseThrow();
     }

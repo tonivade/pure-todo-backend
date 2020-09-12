@@ -123,7 +123,7 @@ public final class TodoAPI {
 
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
     Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = TaskInstances.applicative()
-        .map3(
+        .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)), 
             getOrder(request).map(toOperation(Todo::withOrder)), 
             getCompleted(request).map(toOperation(Todo::withCompleted)), 
