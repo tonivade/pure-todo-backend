@@ -8,8 +8,7 @@ import com.github.tonivade.purecfg.PureCFG;
 import com.github.tonivade.purefun.type.Validation;
 import com.github.tonivade.purefun.type.Validation.Result;
 
-import static com.github.tonivade.purecfg.PureCFG.map2;
-import static com.github.tonivade.purecfg.PureCFG.map3;
+import static com.github.tonivade.purecfg.PureCFG.mapN;
 import static com.github.tonivade.purecfg.PureCFG.readConfig;
 import static com.github.tonivade.purecfg.PureCFG.readInt;
 import static com.github.tonivade.purecfg.PureCFG.readString;
@@ -25,7 +24,7 @@ public record Config(Server server, Database database) {
   }
 
   public static Validation<Result<String>, Config> load(String file) {
-    return map2(
+    return mapN(
         readConfig("server", Server.load()),
         readConfig("database", Database.load()),
         Config::new).validatedRun(fromToml(file));
@@ -40,7 +39,7 @@ public record Config(Server server, Database database) {
     }
 
     public static PureCFG<Server> load() {
-      return map2(
+      return mapN(
           readString("host"),
           readInt("port"),
           Server::new);
@@ -56,7 +55,7 @@ public record Config(Server server, Database database) {
     }
 
     public static PureCFG<Database> load() {
-      return map3(
+      return mapN(
           readString("url"),
           readString("user"),
           readString("password"),
