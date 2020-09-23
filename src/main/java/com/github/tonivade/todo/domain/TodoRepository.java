@@ -29,7 +29,7 @@ public interface TodoRepository<F extends Witness> {
     return For.with(monad())
         .andThen(() -> find(id))
         .map(option -> option.map(update::apply))
-        .flatMap(option -> option.fold(() -> monad().pure(none()), this::update))
+        .flatMap(option -> option.<Kind<F, Option<Todo>>>fold(() -> monad().pure(none()), this::update))
         .run();
   }
 }
