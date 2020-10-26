@@ -4,6 +4,11 @@
  */
 package com.github.tonivade.todo.application;
 
+import static com.github.tonivade.json.JsonElement.array;
+import static com.github.tonivade.json.JsonElement.entry;
+import static com.github.tonivade.json.JsonElement.object;
+import static com.github.tonivade.json.JsonPrimitive.number;
+import static com.github.tonivade.json.JsonPrimitive.string;
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
@@ -11,8 +16,13 @@ import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
+import com.github.tonivade.json.Json;
+import com.github.tonivade.json.JsonElement;
+import com.github.tonivade.json.Reflection;
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Operator1;
@@ -97,7 +107,7 @@ public final class TodoAPI {
 
   private Task<TodoDTO> getTodo(HttpRequest request) {
     return Task.task(request::body)
-        .map(jsonToObject(TodoDTO.class));
+        .map(jsonToObject(json -> new Json().fromJson(json, TodoDTO.class)));
   }
 
   private Task<Integer> getId(HttpRequest request) {
@@ -136,17 +146,40 @@ public final class TodoAPI {
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
-    return throwableToJson().andThen(toResponse);
+    return throwableToJson(serializeThrowable()).andThen(toResponse);
+  }
+
+  private Function1<Throwable, String> serializeThrowable() {
+    return error -> {
+      JsonElement object = object(
+          entry("type", string(error.getClass().getName())),
+          entry("message", string(error.getMessage())),
+          entry("stack", array(serializeStack(error.getStackTrace())))
+          );
+      return Json.serialize(object);
+    };
+  }
+
+  private Iterable<JsonElement> serializeStack(StackTraceElement[] stackTrace) {
+    var items = new ArrayList<JsonElement>();
+    for (StackTraceElement stackTraceElement : stackTrace) {
+      items.add(object(
+          entry("className", string(stackTraceElement.getClassName())),
+          entry("methodName", string(stackTraceElement.getMethodName())),
+          entry("lineNumber", number(stackTraceElement.getLineNumber()))));
+    }
+    return items;
   }
 
   private Function1<Todo, HttpResponse> fromTodo(Function1<Bytes, HttpResponse> toResponse) {
-    return Serializers.<TodoDTO>objectToJson()
+    return Serializers.<TodoDTO>objectToJson(new Json()::toString)
         .compose(TodoDTO::fromDomain)
         .andThen(toResponse);
   }
 
   private Function1<Sequence<Todo>, HttpResponse> fromSequence(Function1<Bytes, HttpResponse> toResponse) {
-    return Serializers.<Sequence<TodoDTO>>objectToJson()
+    Type listOfTodos = new Reflection<Sequence<TodoDTO>>() {}.getType();
+    return Serializers.<Sequence<TodoDTO>>objectToJson(value -> new Json().toString(value, listOfTodos))
         .<Sequence<Todo>>compose(seq -> seq.map(TodoDTO::fromDomain))
         .andThen(toResponse);
   }

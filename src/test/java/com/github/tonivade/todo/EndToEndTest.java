@@ -5,7 +5,7 @@
 package com.github.tonivade.todo;
 
 import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
+import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Requests.delete;
 import static com.github.tonivade.zeromock.api.Requests.get;
 import static com.github.tonivade.zeromock.api.Requests.post;
@@ -18,8 +18,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import com.github.tonivade.json.Json;
+import com.github.tonivade.json.Reflection;
 import com.github.tonivade.todo.application.TodoDTO;
-import com.github.tonivade.zeromock.api.Deserializers;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
@@ -27,7 +28,6 @@ import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
-import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class EndToEndTest {
@@ -171,12 +171,12 @@ public class EndToEndTest {
   }
 
   private List<TodoDTO> parseList(HttpResponse response) {
-    Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
-    return Deserializers.<List<TodoDTO>>jsonTo(listOfTodos).apply(response.body());
+    Type listOfTodos = new Reflection<List<TodoDTO>>() {}.getType();
+    return new Json().fromJson(asString(response.body()), listOfTodos);
   }
 
   private TodoDTO parseItem(HttpResponse response) {
-    return jsonToObject(TodoDTO.class).apply(response.body());
+    return new Json().fromJson(asString(response.body()), TodoDTO.class);
   }
 
   private HttpRequest deleteAll() {
