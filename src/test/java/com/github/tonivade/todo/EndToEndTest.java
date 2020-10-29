@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.json.Json;
-import com.github.tonivade.json.Reflection;
 import com.github.tonivade.todo.application.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -28,6 +27,7 @@ import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class EndToEndTest {
@@ -171,7 +171,7 @@ public class EndToEndTest {
   }
 
   private List<TodoDTO> parseList(HttpResponse response) {
-    Type listOfTodos = new Reflection<List<TodoDTO>>() {}.getType();
+    Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
     return new Json().fromJson(asString(response.body()), listOfTodos);
   }
 

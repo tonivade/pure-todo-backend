@@ -4,11 +4,11 @@
  */
 package com.github.tonivade.todo.application;
 
-import static com.github.tonivade.json.JsonElement.array;
-import static com.github.tonivade.json.JsonElement.entry;
-import static com.github.tonivade.json.JsonElement.object;
-import static com.github.tonivade.json.JsonPrimitive.number;
-import static com.github.tonivade.json.JsonPrimitive.string;
+import static com.github.tonivade.json.JsonDSL.array;
+import static com.github.tonivade.json.JsonDSL.entry;
+import static com.github.tonivade.json.JsonDSL.number;
+import static com.github.tonivade.json.JsonDSL.object;
+import static com.github.tonivade.json.JsonDSL.string;
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 import com.github.tonivade.json.Json;
-import com.github.tonivade.json.JsonElement;
-import com.github.tonivade.json.Reflection;
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Operator1;
@@ -44,6 +42,8 @@ import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.api.Serializers;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 
 public final class TodoAPI {
 
@@ -178,7 +178,7 @@ public final class TodoAPI {
   }
 
   private Function1<Sequence<Todo>, HttpResponse> fromSequence(Function1<Bytes, HttpResponse> toResponse) {
-    Type listOfTodos = new Reflection<Sequence<TodoDTO>>() {}.getType();
+    Type listOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
     return Serializers.<Sequence<TodoDTO>>objectToJson(value -> new Json().toString(value, listOfTodos))
         .<Sequence<Todo>>compose(seq -> seq.map(TodoDTO::fromDomain))
         .andThen(toResponse);
