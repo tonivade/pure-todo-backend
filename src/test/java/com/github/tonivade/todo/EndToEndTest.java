@@ -18,7 +18,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.github.tonivade.json.Json;
+import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.todo.application.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -172,11 +172,11 @@ public class EndToEndTest {
 
   private List<TodoDTO> parseList(HttpResponse response) {
     Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
-    return new Json().fromJson(asString(response.body()), listOfTodos);
+    return new PureJson().<List<TodoDTO>>fromJson(asString(response.body()), listOfTodos).get().get();
   }
 
   private TodoDTO parseItem(HttpResponse response) {
-    return new Json().fromJson(asString(response.body()), TodoDTO.class);
+    return new PureJson().<TodoDTO>fromJson(asString(response.body()), TodoDTO.class).get().get();
   }
 
   private HttpRequest deleteAll() {

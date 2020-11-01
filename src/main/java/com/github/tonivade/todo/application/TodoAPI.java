@@ -6,15 +6,15 @@ package com.github.tonivade.todo.application;
 
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.effect.Task.liftTry;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
+import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 
 import java.lang.reflect.Type;
-import java.util.NoSuchElementException;
 
-import com.github.tonivade.json.Json;
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Operator1;
@@ -27,6 +27,7 @@ import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purejson.PureJson;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
@@ -35,7 +36,6 @@ import com.github.tonivade.zeromock.api.Extractors;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.Responses;
-import com.github.tonivade.zeromock.api.Serializers;
 import com.google.gson.reflect.TypeToken;
 
 public final class TodoAPI {
@@ -54,36 +54,41 @@ public final class TodoAPI {
     return getTodo(request)
         .map(TodoDTO::toDraft)
         .flatMap(todo -> repository.create(todo).fix(toTask()))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::created));
+        .flatMap(this::serializeTodo)
+        .fold(fromError(Responses::badRequest), Responses::created);
   }
 
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodo(request)
         .map(TodoDTO::toDomain)
         .flatMap(todo -> repository.update(todo).fix(toTask()))
-        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
+        .flatMap(Task::fromOption)
+        .flatMap(this::serializeTodo)
+        .fold(fromError(Responses::badRequest), Responses::ok);
   }
 
   public UIO<HttpResponse> modify(HttpRequest request) {
     return getIdAndUpdate(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(
             (id, update) -> repository.modify(id, update::apply).fix(toTask())))
-        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
+        .flatMap(Task::fromOption)
+        .flatMap(this::serializeTodo)
+        .fold(fromError(Responses::badRequest), Responses::ok);
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix(toTask())
-        .fold(fromError(Responses::badRequest), fromSequence(Responses::ok));
+        .flatMap(this::serializeTodoList)
+        .fold(fromError(Responses::badRequest), Responses::ok);
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
     return getId(request)
         .map(Id::new)
         .flatMap(id -> repository.find(id).fix(toTask()))
-        .flatMap(option -> option.fold(this::noSuchElement, Task::pure))
-        .fold(fromError(Responses::badRequest), fromTodo(Responses::ok));
+        .flatMap(Task::fromOption)
+        .flatMap(this::serializeTodo)
+        .fold(fromError(Responses::badRequest), Responses::ok);
   }
 
   public UIO<HttpResponse> delete(HttpRequest request) {
@@ -100,7 +105,8 @@ public final class TodoAPI {
 
   private Task<TodoDTO> getTodo(HttpRequest request) {
     return Task.task(request::body)
-        .map(jsonToObject(json -> new Json().fromJson(json, TodoDTO.class)));
+        .flatMap(liftTry(jsonToObject(json -> new PureJson().<TodoDTO>fromJson(json, TodoDTO.class))))
+        .flatMap(Task::fromOption);
   }
 
   private Task<Integer> getId(HttpRequest request) {
@@ -141,21 +147,15 @@ public final class TodoAPI {
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
     return throwableToJson().andThen(toResponse);
   }
-
-  private Function1<Todo, HttpResponse> fromTodo(Function1<Bytes, HttpResponse> toResponse) {
-    return Serializers.<TodoDTO>objectToJson(new Json()::toString)
-        .compose(TodoDTO::fromDomain)
-        .andThen(toResponse);
+  
+  private Task<String> serializeTodoList(Sequence<Todo> todoList) {
+    Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
+    return Task.task(() -> todoList.map(TodoDTO::fromDomain))
+        .flatMap(liftTry(value -> new PureJson().toString(value, seqOfTodos)));
   }
-
-  private Function1<Sequence<Todo>, HttpResponse> fromSequence(Function1<Bytes, HttpResponse> toResponse) {
-    Type listOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
-    return Serializers.<Sequence<TodoDTO>>objectToJson(value -> new Json().toString(value, listOfTodos))
-        .<Sequence<Todo>>compose(seq -> seq.map(TodoDTO::fromDomain))
-        .andThen(toResponse);
-  }
-
-  private <X> Task<X> noSuchElement() {
-    return Task.raiseError(new NoSuchElementException());
+  
+  private Task<String> serializeTodo(Todo todo) {
+    return Task.task(() -> fromDomain(todo))
+        .flatMap(liftTry(new PureJson()::toString));
   }
 }
