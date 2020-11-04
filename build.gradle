@@ -1,6 +1,18 @@
 apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'application'
+apply plugin: 'com.diffplug.eclipse.apt'
+
+buildscript {
+  repositories {
+    mavenCentral()
+    jcenter()
+  }
+
+  dependencies {
+    classpath 'com.diffplug.gradle:goomph:3.25.0'
+  }
+}
 
 archivesBaseName = 'todo-backend'
 version = '0.1.0-SNAPSHOT'
@@ -16,8 +28,10 @@ repositories {
   }
 }
 
-tasks.withType(JavaCompile).each {
-  it.options.compilerArgs.addAll('--enable-preview')
+tasks.withType(JavaCompile) {
+  options.compilerArgs.addAll('--enable-preview')
+  options.fork = true
+  options.forkOptions.jvmArgs << '--enable-preview'
 }
 
 test {
@@ -32,6 +46,7 @@ javadoc.options {
 }
 
 dependencies {
+  annotationProcessor 'com.github.tonivade:purejson:0.1.0-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-monad:2.2-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-effect:2.2-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-instances:2.2-SNAPSHOT'

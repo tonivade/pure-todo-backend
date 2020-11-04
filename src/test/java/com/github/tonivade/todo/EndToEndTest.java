@@ -172,11 +172,11 @@ public class EndToEndTest {
 
   private List<TodoDTO> parseList(HttpResponse response) {
     Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
-    return new PureJson().<List<TodoDTO>>fromJson(asString(response.body()), listOfTodos).get().get();
+    return new PureJson<List<TodoDTO>>(listOfTodos).fromJson(asString(response.body())).get().get();
   }
 
   private TodoDTO parseItem(HttpResponse response) {
-    return new PureJson().<TodoDTO>fromJson(asString(response.body()), TodoDTO.class).get().get();
+    return new PureJson<>(TodoDTO.class).fromJson(asString(response.body())).get().get();
   }
 
   private HttpRequest deleteAll() {

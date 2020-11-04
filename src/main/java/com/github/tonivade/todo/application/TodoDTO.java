@@ -4,14 +4,16 @@
  */
 package com.github.tonivade.todo.application;
 
-import com.github.tonivade.purefun.type.Validation;
-import com.github.tonivade.todo.domain.Todo;
-
 import static com.github.tonivade.purefun.type.Validation.requireNonEmpty;
 import static com.github.tonivade.purefun.type.Validation.requireNonNull;
 import static com.github.tonivade.purefun.type.Validation.requirePositive;
 import static java.util.Objects.nonNull;
 
+import com.github.tonivade.purefun.type.Validation;
+import com.github.tonivade.purejson.Json;
+import com.github.tonivade.todo.domain.Todo;
+
+@Json
 public record TodoDTO(Integer id, String title, Integer order, Boolean completed, String url) {
 
   private static final String BASE_URL = "https://tonivade.es/todo/";

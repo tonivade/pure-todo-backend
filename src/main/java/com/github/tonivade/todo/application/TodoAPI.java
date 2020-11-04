@@ -105,7 +105,7 @@ public final class TodoAPI {
 
   private Task<TodoDTO> getTodo(HttpRequest request) {
     return Task.task(request::body)
-        .flatMap(liftTry(jsonToObject(json -> new PureJson().<TodoDTO>fromJson(json, TodoDTO.class))))
+        .flatMap(liftTry(jsonToObject(json -> new PureJson<>(TodoDTO.class).fromJson(json))))
         .flatMap(Task::fromOption);
   }
 
@@ -151,11 +151,11 @@ public final class TodoAPI {
   private Task<String> serializeTodoList(Sequence<Todo> todoList) {
     Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
     return Task.task(() -> todoList.map(TodoDTO::fromDomain))
-        .flatMap(liftTry(value -> new PureJson().toString(value, seqOfTodos)));
+        .flatMap(liftTry(value -> new PureJson<>(seqOfTodos).toString(value)));
   }
   
   private Task<String> serializeTodo(Todo todo) {
     return Task.task(() -> fromDomain(todo))
-        .flatMap(liftTry(new PureJson()::toString));
+        .flatMap(liftTry(value -> new PureJson<>(TodoDTO.class).toString(value)));
   }
 }
