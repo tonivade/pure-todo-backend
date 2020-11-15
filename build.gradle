@@ -47,9 +47,9 @@ javadoc.options {
 
 dependencies {
   annotationProcessor 'com.github.tonivade:purejson:0.1.0-SNAPSHOT'
-  implementation 'com.github.tonivade:purefun-monad:2.2-SNAPSHOT'
-  implementation 'com.github.tonivade:purefun-effect:2.2-SNAPSHOT'
-  implementation 'com.github.tonivade:purefun-instances:2.2-SNAPSHOT'
+  implementation 'com.github.tonivade:purefun-monad:2.2'
+  implementation 'com.github.tonivade:purefun-effect:2.2'
+  implementation 'com.github.tonivade:purefun-instances:2.2'
   implementation 'com.github.tonivade:zeromock-server:0.14.0-SNAPSHOT'
   implementation 'com.github.tonivade:puredbc:0.2.0-SNAPSHOT'
   implementation 'com.github.tonivade:purecfg:0.2.0-SNAPSHOT'
