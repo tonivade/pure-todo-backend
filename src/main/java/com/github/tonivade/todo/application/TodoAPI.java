@@ -156,6 +156,6 @@ public final class TodoAPI {
   
   private Task<String> serializeTodo(Todo todo) {
     return Task.task(() -> fromDomain(todo))
-        .flatMap(liftTry(value -> new PureJson<>(TodoDTO.class).toString(value)));
+        .flatMap(liftTry(new PureJson<>(TodoDTO.class)::toString));
   }
 }
