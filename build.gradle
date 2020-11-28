@@ -61,8 +61,8 @@ dependencies {
   testImplementation 'com.github.tonivade:zeromock-client:0.14.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
   testImplementation 'org.junit.platform:junit-platform-runner:1.7.0'
-  testImplementation 'org.mockito:mockito-core:3.5.11'
-  testImplementation 'org.mockito:mockito-junit-jupiter:3.5.11'
+  testImplementation 'org.mockito:mockito-core:3.6.28'
+  testImplementation 'org.mockito:mockito-junit-jupiter:3.6.28'
 }
 
 application {
