@@ -28,6 +28,7 @@ import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purejson.PureJson;
+import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
@@ -36,7 +37,6 @@ import com.github.tonivade.zeromock.api.Extractors;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.Responses;
-import com.google.gson.reflect.TypeToken;
 
 public final class TodoAPI {
 

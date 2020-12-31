@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.purejson.PureJson;
+import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.application.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
@@ -27,7 +28,6 @@ import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
-import com.google.gson.reflect.TypeToken;
 
 @ExtendWith(MockHttpServerExtension.class)
 public class EndToEndTest {
