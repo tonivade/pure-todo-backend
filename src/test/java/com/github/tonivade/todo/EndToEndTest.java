@@ -30,7 +30,7 @@ import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
 @ExtendWith(MockHttpServerExtension.class)
-public class EndToEndTest {
+class EndToEndTest {
   
   private static final String TODO = "/todo";
 
@@ -39,7 +39,7 @@ public class EndToEndTest {
   private HttpUIOService service = Application.buildService(config);
   
   @Test
-  public void emptyArrayWhenEmpty(UIOMockHttpServer server, UIOHttpClient client) {
+  void emptyArrayWhenEmpty(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
     
     HttpResponse response = client.request(deleteAll())
@@ -51,7 +51,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void createItem(UIOMockHttpServer server, UIOHttpClient client) {
+  void createItem(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -66,7 +66,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void afterCreateItemThenReturned(UIOMockHttpServer server, UIOHttpClient client) {
+  void afterCreateItemThenReturned(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -82,7 +82,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void createTwoItems(UIOMockHttpServer server, UIOHttpClient client) {
+  void createTwoItems(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -100,7 +100,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void updateTitle(UIOMockHttpServer server, UIOHttpClient client) {
+  void updateTitle(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -117,7 +117,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void updateOrder(UIOMockHttpServer server, UIOHttpClient client) {
+  void updateOrder(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -134,7 +134,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void updateCompleted(UIOMockHttpServer server, UIOHttpClient client) {
+  void updateCompleted(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())
@@ -151,7 +151,7 @@ public class EndToEndTest {
   }
   
   @Test
-  public void updateTitleOrderAndCompleted(UIOMockHttpServer server, UIOHttpClient client) {
+  void updateTitleOrderAndCompleted(UIOMockHttpServer server, UIOHttpClient client) {
     server.mount(TODO, service);
 
     HttpResponse response = client.request(deleteAll())

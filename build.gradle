@@ -17,8 +17,8 @@ buildscript {
 archivesBaseName = 'todo-backend'
 version = '0.1.0-SNAPSHOT'
 
-sourceCompatibility = 15
-targetCompatibility = 15
+sourceCompatibility = 16
+targetCompatibility = 16
 
 repositories {
   mavenLocal()
@@ -29,20 +29,15 @@ repositories {
 }
 
 tasks.withType(JavaCompile) {
-  options.compilerArgs.addAll('--enable-preview')
   options.fork = true
-  options.forkOptions.jvmArgs << '--enable-preview'
 }
 
 test {
   useJUnitPlatform()
-  
-  jvmArgs(['--enable-preview'])
 }
 
 javadoc.options {
-    addBooleanOption('-enable-preview', true)
-    addStringOption('-release', '15')
+  addStringOption('-release', '16')
 }
 
 dependencies {
@@ -56,7 +51,7 @@ dependencies {
   implementation 'com.github.tonivade:purejson:0.2-SNAPSHOT'
   implementation 'com.zaxxer:HikariCP:3.4.2'
   implementation 'org.flywaydb:flyway-core:5.2.4'
-  runtime 'com.h2database:h2:1.4.200'
+  implementation 'com.h2database:h2:1.4.200'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.15.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:zeromock-client:0.15.0-SNAPSHOT'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
