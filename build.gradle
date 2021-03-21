@@ -69,6 +69,7 @@ task fatJar(type: Jar) {
     attributes "Main-Class": "com.github.tonivade.todo.Application"
   }
   archiveClassifier = "all"
+  duplicatesStrategy = "warn"
   from {
     configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
