@@ -2,15 +2,20 @@ apply plugin: 'java'
 apply plugin: 'java-library'
 apply plugin: 'application'
 apply plugin: 'com.diffplug.eclipse.apt'
+apply plugin: 'org.mikeneck.graalvm-native-image'
 
 buildscript {
   repositories {
     mavenCentral()
     jcenter()
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
   }
 
   dependencies {
     classpath 'com.diffplug.gradle:goomph:3.25.0'
+    classpath "gradle.plugin.org.mikeneck:graalvm-native-image-plugin:1.3.0"
   }
 }
 
@@ -75,4 +80,19 @@ task fatJar(type: Jar) {
     configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
   }
   with jar
+}
+
+nativeImage {
+  graalVmHome = System.getenv("HOME") + "/.sdkman/candidates/java/21.1.0.r16-grl"
+  mainClass = "com.github.tonivade.todo.Application"
+  executableName = "todo-backend"
+  arguments(
+          '--verbose',
+          '--report-unsupported-elements-at-runtime',
+          '--initialize-at-build-time',
+          '--no-fallback',
+          '--allow-incomplete-classpath',
+          '--delay-class-initialization-to-runtime=org.h2.store.fs.FileNioMemData',
+          '-H:IncludeResources=application.toml'
+  )
 }
