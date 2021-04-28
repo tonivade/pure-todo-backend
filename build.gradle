@@ -56,15 +56,15 @@ dependencies {
   implementation 'com.github.tonivade:puredbc:0.3-SNAPSHOT'
   implementation 'com.github.tonivade:purecfg:0.3-SNAPSHOT'
   implementation 'com.github.tonivade:purejson:0.2-SNAPSHOT'
-  implementation 'com.zaxxer:HikariCP:3.4.2'
+  implementation 'com.zaxxer:HikariCP:4.0.3'
   implementation 'org.flywaydb:flyway-core:5.2.4'
   implementation 'com.h2database:h2:1.4.200'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.15.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:zeromock-client:0.15.0-SNAPSHOT'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-  testImplementation 'org.junit.platform:junit-platform-runner:1.7.0'
-  testImplementation 'org.mockito:mockito-core:3.7.0'
-  testImplementation 'org.mockito:mockito-junit-jupiter:3.7.0'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
+  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.7.1'
+  testImplementation 'org.mockito:mockito-core:3.9.0'
+  testImplementation 'org.mockito:mockito-junit-jupiter:3.9.0'
 }
 
 application {
