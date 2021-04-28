@@ -59,6 +59,7 @@ dependencies {
   implementation 'com.zaxxer:HikariCP:4.0.3'
   implementation 'org.flywaydb:flyway-core:5.2.4'
   implementation 'com.h2database:h2:1.4.200'
+  runtimeOnly 'ch.qos.logback:logback-classic:1.2.3'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.15.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:zeromock-client:0.15.0-SNAPSHOT'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
