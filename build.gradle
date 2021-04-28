@@ -49,7 +49,7 @@ dependencies {
   annotationProcessor 'com.github.tonivade:purejson:0.2-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-monad:2.3-SNAPSHOT'
   implementation 'com.github.tonivade:purefun-effect:2.3-SNAPSHOT'
-  implementation 'com.github.tonivade:purefun-instances:2.3-SNAPSHOT'
+  runtimeOnly 'com.github.tonivade:purefun-instances:2.3-SNAPSHOT'
   implementation 'com.github.tonivade:zeromock-server:0.15.0-SNAPSHOT'
   implementation 'com.github.tonivade:puredbc:0.3-SNAPSHOT'
   implementation 'com.github.tonivade:purecfg:0.3-SNAPSHOT'

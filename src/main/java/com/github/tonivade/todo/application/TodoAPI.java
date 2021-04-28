@@ -12,9 +12,7 @@ import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
-
 import java.lang.reflect.Type;
-
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Operator1;
@@ -25,8 +23,8 @@ import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
-import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
@@ -132,7 +130,7 @@ public final class TodoAPI {
   }
 
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
-    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = TaskInstances.applicative()
+    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instance.applicative(Task_.class)
         .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),

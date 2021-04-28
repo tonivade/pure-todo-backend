@@ -4,24 +4,22 @@
  */
 package com.github.tonivade.todo.infrastructure;
 
+import static com.github.tonivade.purefun.effect.Task.exec;
+import static com.github.tonivade.purefun.effect.Task.task;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import com.github.tonivade.purefun.Unit;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;
-import com.github.tonivade.purefun.instances.TaskInstances;
 import com.github.tonivade.purefun.type.Option;
+import com.github.tonivade.purefun.typeclasses.Instance;
 import com.github.tonivade.purefun.typeclasses.Monad;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.github.tonivade.purefun.effect.Task.exec;
-import static com.github.tonivade.purefun.effect.Task.task;
 
 public final class TodoInMemoryRepository implements TodoRepository<Task_> {
 
@@ -30,7 +28,7 @@ public final class TodoInMemoryRepository implements TodoRepository<Task_> {
 
   @Override
   public Monad<Task_> monad() {
-    return TaskInstances.monad();
+    return Instance.monad(Task_.class);
   }
 
   @Override
