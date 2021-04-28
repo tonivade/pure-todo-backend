@@ -5,5 +5,13 @@
     "methods" : [
       { "name" : "applicative" }
     ]
+  },
+  {
+    "name" : "com.github.tonivade.purefun.instances.TaskInstances",
+    "fields" : [ ],
+    "methods" : [
+      { "name" : "applicative" },
+      { "name" : "monad" }
+    ]
   }
 ]
