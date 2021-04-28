@@ -41,6 +41,8 @@ public final class TodoAPI {
 
   private final TodoRepository<Task_> repository;
 
+  private final Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
+
   public TodoAPI(TodoRepository<Task_> repository) {
     this.repository = checkNonNull(repository);
   }
@@ -52,7 +54,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodoDTO(request)
         .map(TodoDTO::toDraft)
-        .flatMap(todo -> repository.create(todo))
+        .flatMap(repository::create)
         .flatMap(this::serializeTodo)
         .fold(fromError(Responses::badRequest), Responses::created);
   }
@@ -60,7 +62,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodoDTO(request)
         .map(TodoDTO::toDomain)
-        .flatMap(todo -> repository.update(todo))
+        .flatMap(repository::update)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
         .fold(fromError(Responses::badRequest), Responses::ok);
@@ -84,7 +86,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> find(HttpRequest request) {
     return getId(request)
         .map(Id::new)
-        .flatMap(id -> repository.find(id))
+        .flatMap(repository::find)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
         .fold(fromError(Responses::badRequest), Responses::ok);
@@ -93,7 +95,7 @@ public final class TodoAPI {
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .map(Id::new)
-        .flatMap(id -> repository.delete(id))
+        .flatMap(repository::delete)
         .fold(fromError(Responses::badRequest), cons(Responses.ok()));
   }
 
@@ -132,13 +134,13 @@ public final class TodoAPI {
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
     Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = TaskInstances.applicative()
         .mapN(
-            getTitle(request).map(toOperation(Todo::withTitle)), 
-            getOrder(request).map(toOperation(Todo::withOrder)), 
-            getCompleted(request).map(toOperation(Todo::withCompleted)), 
+            getTitle(request).map(toOperation(Todo::withTitle)),
+            getOrder(request).map(toOperation(Todo::withOrder)),
+            getCompleted(request).map(toOperation(Todo::withCompleted)),
             Tuple3::of).fix(toTask());
     return map3.map(tuple -> tuple.applyTo((op1, op2, op3) -> op1.andThen(op2).andThen(op3)::apply));
   }
-  
+
   private <T> Function1<Option<T>, Operator1<Todo>> toOperation(Function2<Todo, T, Todo> function) {
     return value -> value.fold(Producer.cons(todo -> todo), v -> todo -> function.apply(todo, v));
   }
@@ -146,13 +148,12 @@ public final class TodoAPI {
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
     return throwableToJson().andThen(t -> t.fold(Responses::error, toResponse));
   }
-  
+
   private Task<Bytes> serializeTodoList(Sequence<Todo> todoList) {
-    Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
     return Task.task(() -> todoList.map(TodoDTO::fromDomain))
         .flatMap(objectToJson(seqOfTodos).andThen(Task::fromTry));
   }
-  
+
   private Task<Bytes> serializeTodo(Todo todo) {
     return Task.task(() -> fromDomain(todo))
         .flatMap(objectToJson(TodoDTO.class).andThen(Task::fromTry));
