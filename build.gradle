@@ -106,6 +106,7 @@ nativeImage {
           '--no-fallback',
           '--allow-incomplete-classpath',
           '--initialize-at-run-time=org.h2.store.fs.FileNioMemData',
-          '-H:IncludeResources=application.toml'
+          '-H:IncludeResources=application.toml',
+          '-H:ReflectionConfigurationFiles=src/native-image/reflection.json'
   )
 }

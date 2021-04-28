@@ -1,0 +1,9 @@
+[
+  {
+    "name" : "com.github.tonivade.purefun.instances.ValidationInstances",
+    "fields" : [ ],
+    "methods" : [
+      { "name" : "applicative" }
+    ]
+  }
+]
