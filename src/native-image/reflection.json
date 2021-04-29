@@ -1,61 +1,61 @@
 [
   {
     "name": "java.lang.Class",
-    "allPublicMethods" : true
+    "allPublicMethods": true
   },
   {
     "name": "java.lang.reflect.RecordComponent",
-    "allPublicMethods" : true
+    "allPublicMethods": true
   },
   {
     "name": "com.github.tonivade.todo.application.TodoDTO",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "allDeclaredClasses" : true,
-    "allPublicClasses" : true
+    "allDeclaredConstructors": true,
+    "allPublicConstructors": true,
+    "allDeclaredMethods": true,
+    "allPublicMethods": true,
+    "allDeclaredClasses": true,
+    "allPublicClasses": true
   },
   {
-    "name" : "com.github.tonivade.purefun.instances.ValidationInstances",
-    "allPublicMethods" : true
+    "name": "com.github.tonivade.purefun.instances.ValidationInstances",
+    "allPublicMethods": true
   },
   {
-    "name" : "com.github.tonivade.purefun.instances.TaskInstances",
-    "allPublicMethods" : true
+    "name": "com.github.tonivade.purefun.instances.TaskInstances",
+    "allPublicMethods": true
   },
   {
-    "name" : "com.github.tonivade.purefun.instances.IdInstances",
-    "allPublicMethods" : true
+    "name": "com.github.tonivade.purefun.instances.IdInstances",
+    "allPublicMethods": true
   },
   {
-    "name" : "com.github.tonivade.purefun.instances.UIOInstances",
-    "allPublicMethods" : true
+    "name": "com.github.tonivade.purefun.instances.UIOInstances",
+    "allPublicMethods": true
   },
   {
     "name": "org.h2.mvstore.db.MVTableEngine",
-    "allDeclaredFields" : true,
-    "allPublicMethods" : true,
-    "allDeclaredConstructors" : true
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
   },
   {
-    "name":"com.zaxxer.hikari.HikariConfig",
-    "allDeclaredFields":true,
+    "name": "com.zaxxer.hikari.HikariConfig",
+    "allDeclaredFields": true,
     "allDeclaredMethods": true
   },
   {
-    "name":"java.sql.Statement[]",
-    "allDeclaredConstructors":true
+    "name": "java.sql.Statement[]",
+    "allDeclaredConstructors": true
   },
   {
-    "name" : "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]",
-    "allDeclaredFields" : true,
-    "allPublicMethods" : true,
-    "allDeclaredConstructors" : true
+    "name": "com.zaxxer.hikari.util.ConcurrentBag$IConcurrentBagEntry[]",
+    "allDeclaredFields": true,
+    "allPublicMethods": true,
+    "allDeclaredConstructors": true
   },
   {
-    "name" : "java.util.concurrent.CopyOnWriteArrayList",
-    "fields" : [
+    "name": "java.util.concurrent.CopyOnWriteArrayList",
+    "fields": [
       { "name" : "lock", "allowWrite" : true }
     ]
   }
