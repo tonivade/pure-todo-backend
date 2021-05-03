@@ -1,13 +1,5 @@
 [
   {
-    "name": "java.lang.Class",
-    "allPublicMethods": true
-  },
-  {
-    "name": "java.lang.reflect.RecordComponent",
-    "allPublicMethods": true
-  },
-  {
     "name": "com.github.tonivade.todo.application.TodoDTO",
     "allDeclaredConstructors": true,
     "allPublicConstructors": true,
