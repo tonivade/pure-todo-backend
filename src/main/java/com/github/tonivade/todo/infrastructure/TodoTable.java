@@ -4,12 +4,11 @@
  */
 package com.github.tonivade.todo.infrastructure;
 
-import com.github.tonivade.puredbc.Row;
 import com.github.tonivade.puredbc.sql.Field;
+import com.github.tonivade.puredbc.sql.Field_;
 import com.github.tonivade.puredbc.sql.Table4;
-import com.github.tonivade.purefun.Tuple;
-import com.github.tonivade.purefun.Tuple4;
-import com.github.tonivade.purefun.data.NonEmptyList;
+import com.github.tonivade.purefun.typeclasses.TupleK;
+import com.github.tonivade.purefun.typeclasses.TupleK4;
 
 public final class TodoTable implements Table4<Long, String, Integer, Boolean> {
 
@@ -19,21 +18,12 @@ public final class TodoTable implements Table4<Long, String, Integer, Boolean> {
   public final Field<Boolean> COMPLETED = Field.of("completed");
 
   @Override
-  public Tuple4<Long, String, Integer, Boolean> asTuple(Row row) {
-    return Tuple.of(
-        row.getLong(ID),
-        row.getString(TITLE),
-        row.getInteger(ORDER),
-        row.getBoolean(COMPLETED));
-  }
-
-  @Override
-  public NonEmptyList<Field<?>> all() {
-    return NonEmptyList.of(ID, TITLE, ORDER, COMPLETED);
-  }
-
-  @Override
   public String name() {
     return "todo";
+  }
+  
+  @Override
+  public TupleK4<Field_, Long, String, Integer, Boolean> fields() {
+    return TupleK.of(ID, TITLE, ORDER, COMPLETED);
   }
 }
