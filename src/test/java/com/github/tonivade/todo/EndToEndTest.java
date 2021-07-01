@@ -9,6 +9,7 @@ import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Requests.delete;
 import static com.github.tonivade.zeromock.api.Requests.get;
 import static com.github.tonivade.zeromock.api.Requests.post;
+import static com.github.tonivade.zeromock.api.Requests.patch;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -197,8 +198,7 @@ class EndToEndTest {
   }
 
   private HttpRequest updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {
-    return post(TODO + "/" + id)
-      .withHeader("_method", "PATCH")
+    return patch(TODO + "/" + id)
       .withHeader("Content-type", "application/json")
       .withBody(
           """
@@ -211,8 +211,7 @@ class EndToEndTest {
   }
 
   private HttpRequest updateTitle(int id, String title) {
-    return post(TODO + "/" + id)
-      .withHeader("_method", "PATCH")
+    return patch(TODO + "/" + id)
       .withHeader("Content-type", "application/json")
       .withBody(
           """
@@ -221,8 +220,7 @@ class EndToEndTest {
   }
 
   private HttpRequest updateOrder(int id, int order) {
-    return post(TODO + "/" + id)
-      .withHeader("_method", "PATCH")
+    return patch(TODO + "/" + id)
       .withHeader("Content-type", "application/json")
       .withBody(
           """
@@ -231,8 +229,7 @@ class EndToEndTest {
   }
 
   private HttpRequest updateCompleted(int id, boolean completed) {
-    return post(TODO + "/" + id)
-      .withHeader("_method", "PATCH")
+    return patch(TODO + "/" + id)
       .withHeader("Content-type", "application/json")
       .withBody(
           """
