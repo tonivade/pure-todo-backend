@@ -126,7 +126,7 @@ public final class TodoAPI {
   }
 
   private Task<Tuple2<Integer, Operator1<Todo>>> getIdAndUpdate(HttpRequest request) {
-    return Task.map2(getId(request), getUpdate(request), Tuple2::of);
+    return getId(request).zip(getUpdate(request));
   }
 
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
