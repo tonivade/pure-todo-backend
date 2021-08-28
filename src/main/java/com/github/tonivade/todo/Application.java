@@ -9,7 +9,6 @@ import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
 import static com.github.tonivade.zeromock.api.Matchers.delete;
 import static com.github.tonivade.zeromock.api.Matchers.get;
-import static com.github.tonivade.zeromock.api.Matchers.header;
 import static com.github.tonivade.zeromock.api.Matchers.jsonPath;
 import static com.github.tonivade.zeromock.api.Matchers.options;
 import static com.github.tonivade.zeromock.api.Matchers.patch;
