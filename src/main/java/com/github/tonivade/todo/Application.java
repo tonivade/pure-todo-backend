@@ -40,7 +40,7 @@ public final class Application {
   }
 
   protected static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
-    var server = UIOMockHttpServer.async()
+    var server = UIOMockHttpServer.builder()
         .host(config.server().host())
         .port(config.server().port()).build();
     return server.mount("/todo", service);
