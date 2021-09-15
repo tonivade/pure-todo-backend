@@ -15,12 +15,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 17
-      uses: actions/setup-java@v1
-      with:
-        java-version: 17
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+      - name: 'Download latest JDK 17'
+        run: |
+          wget \
+            --no-verbose \
+            --directory-prefix $RUNNER_TEMP \
+            https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.gz
+      - name: 'Set up JDK'
+        uses: actions/setup-java@v2
+        with:
+          java-version: 17
+          distribution: jdkfile
+          jdkFile: ${{ runner.temp }}/jdk-17_linux-x64_bin.tar.gz
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build
