@@ -23,8 +23,8 @@ buildscript {
 archivesBaseName = 'todo-backend'
 version = '0.1.0-SNAPSHOT'
 
-sourceCompatibility = 16
-targetCompatibility = 16
+sourceCompatibility = 17
+targetCompatibility = 17
 
 repositories {
   mavenLocal()
@@ -43,7 +43,7 @@ test {
 }
 
 javadoc.options {
-  addStringOption('-release', '16')
+  addStringOption('-release', '17')
 }
 
 dependencies {
