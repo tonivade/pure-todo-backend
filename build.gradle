@@ -1,23 +1,8 @@
-apply plugin: 'java-library'
-apply plugin: 'application'
-apply plugin: 'com.diffplug.eclipse.apt'
-apply plugin: 'org.mikeneck.graalvm-native-image'
-apply plugin: 'de.undercouch.download'
-
-buildscript {
-  repositories {
-    mavenCentral()
-    jcenter()
-    maven {
-      url "https://plugins.gradle.org/m2/"
-    }
-  }
-
-  dependencies {
-    classpath 'com.diffplug.gradle:goomph:3.25.0'
-    classpath "gradle.plugin.org.mikeneck:graalvm-native-image-plugin:1.3.0"
-    classpath 'de.undercouch:gradle-download-task:4.1.1'
-  }
+plugins {
+  id 'java-library'
+  id 'application'
+  id 'de.undercouch.download' version '4.1.1'
+  id 'org.mikeneck.graalvm-native-image' version '1.4.1'
 }
 
 archivesBaseName = 'todo-backend'
@@ -69,7 +54,7 @@ dependencies {
 }
 
 application {
-  mainClassName = 'com.github.tonivade.todo.Application'
+  mainClass = 'com.github.tonivade.todo.Application'
 }
 
 task fatJar(type: Jar) {
