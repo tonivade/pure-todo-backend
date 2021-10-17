@@ -8,9 +8,6 @@ plugins {
 archivesBaseName = 'todo-backend'
 version = '0.1.0-SNAPSHOT'
 
-sourceCompatibility = 17
-targetCompatibility = 17
-
 repositories {
   mavenLocal()
   mavenCentral()
@@ -19,8 +16,10 @@ repositories {
   }
 }
 
-tasks.withType(JavaCompile) {
-  options.fork = true
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(17)
+  }
 }
 
 test {
