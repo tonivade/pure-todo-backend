@@ -46,10 +46,10 @@ dependencies {
   runtimeOnly 'ch.qos.logback:logback-classic:1.2.3'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.15.0'
   testImplementation 'com.github.tonivade:zeromock-client:0.15.0'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
-  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.8.0'
-  testImplementation 'org.mockito:mockito-core:3.12.4'
-  testImplementation 'org.mockito:mockito-junit-jupiter:3.12.4'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.8.1'
+  testImplementation 'org.mockito:mockito-core:4.1.0'
+  testImplementation 'org.mockito:mockito-junit-jupiter:4.1.0'
 }
 
 application {
@@ -70,7 +70,7 @@ task fatJar(type: Jar) {
 }
 
 task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/21.3.0-dev-20211011_0738/graalvm-ce-java17-linux-amd64-dev.tar.gz"
+  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/22.0.0-dev-20211108_1957/graalvm-ce-java17-linux-amd64-dev.tar.gz"
   dest new java.io.File(buildDir, "graalvm.tar.gz")
   onlyIfModified true
 }
