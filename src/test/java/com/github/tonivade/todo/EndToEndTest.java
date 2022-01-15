@@ -8,8 +8,8 @@ import static com.github.tonivade.zeromock.api.Bytes.asBytes;
 import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Requests.delete;
 import static com.github.tonivade.zeromock.api.Requests.get;
-import static com.github.tonivade.zeromock.api.Requests.post;
 import static com.github.tonivade.zeromock.api.Requests.patch;
+import static com.github.tonivade.zeromock.api.Requests.post;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -28,6 +28,7 @@ import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
+import com.github.tonivade.zeromock.junit5.Mount;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
 @ExtendWith(MockHttpServerExtension.class)
@@ -37,12 +38,11 @@ class EndToEndTest {
 
   private Config config = Application.loadConfig();
   
+  @Mount(TODO)
   private HttpUIOService service = Application.buildService(config);
   
   @Test
   void emptyArrayWhenEmpty(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-    
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(getAll()))
         .unsafeRunSync();
@@ -53,8 +53,6 @@ class EndToEndTest {
   
   @Test
   void createItem(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
         .unsafeRunSync();
@@ -68,8 +66,6 @@ class EndToEndTest {
   
   @Test
   void afterCreateItemThenReturned(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
         .andThen(client.request(getAll()))
@@ -84,8 +80,6 @@ class EndToEndTest {
   
   @Test
   void createTwoItems(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
         .andThen(client.request(createNew("qwert")))
@@ -102,8 +96,6 @@ class EndToEndTest {
   
   @Test
   void updateTitle(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
         .flatMap(item -> client.request(updateTitle(item.id(), "qwert")))
@@ -119,8 +111,6 @@ class EndToEndTest {
   
   @Test
   void updateOrder(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
         .flatMap(item -> client.request(updateOrder(item.id(), 3)))
@@ -136,8 +126,6 @@ class EndToEndTest {
   
   @Test
   void updateCompleted(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
         .flatMap(item -> client.request(updateCompleted(item.id(), true)))
@@ -153,8 +141,6 @@ class EndToEndTest {
   
   @Test
   void updateTitleOrderAndCompleted(UIOMockHttpServer server, UIOHttpClient client) {
-    server.mount(TODO, service);
-
     HttpResponse response = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
         .flatMap(item -> client.request(updateTitleOrderAndCompleted(item.id(), "qwert", 3, true)))
