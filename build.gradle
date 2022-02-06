@@ -42,7 +42,7 @@ dependencies {
   implementation 'com.github.tonivade:purejson:0.3-SNAPSHOT'
   implementation 'com.zaxxer:HikariCP:5.0.1'
   implementation 'org.flywaydb:flyway-core:5.2.4'
-  runtimeOnly 'com.h2database:h2:2.0.206'
+  runtimeOnly 'com.h2database:h2:2.1.210'
   runtimeOnly 'ch.qos.logback:logback-classic:1.2.10'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.16.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:zeromock-client:0.16.0-SNAPSHOT'
@@ -88,7 +88,6 @@ nativeImage {
           '--verbose',
           '--report-unsupported-elements-at-runtime',
           '--initialize-at-build-time',
-          '--initialize-at-run-time=org.h2.store.fs.niomem.FileNioMemData',
           '--no-fallback',
           '--allow-incomplete-classpath',
           '-H:IncludeResources=application.toml',
