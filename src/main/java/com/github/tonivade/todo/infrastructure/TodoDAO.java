@@ -40,7 +40,7 @@ public final class TodoDAO {
 
   public PureDBC<Long> insert(TodoEntity entity) {
     return PureDBC.updateWithKeys(
-        INSERT_TODO.bind(entity.title(), entity.order()), TODO.ID).map(Option::get);
+        INSERT_TODO.bind(entity.title(), entity.order()), TODO.ID).map(Option::getOrElseThrow);
   }
 
   public PureDBC<Unit> update(TodoEntity entity) {
