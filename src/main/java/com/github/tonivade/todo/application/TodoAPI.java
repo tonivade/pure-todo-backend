@@ -24,7 +24,7 @@ import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.type.Option;
-import com.github.tonivade.purefun.typeclasses.Instance;
+import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
@@ -130,7 +130,7 @@ public final class TodoAPI {
   }
 
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
-    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instance.applicative(Task_.class)
+    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instances.<Task_>applicative()
         .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),
