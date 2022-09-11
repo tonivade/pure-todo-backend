@@ -45,10 +45,10 @@ dependencies {
   runtimeOnly 'ch.qos.logback:logback-classic:1.2.11'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.16.0'
   testImplementation 'com.github.tonivade:zeromock-client:0.16.0'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.8.2'
-  testImplementation 'org.mockito:mockito-core:4.5.1'
-  testImplementation 'org.mockito:mockito-junit-jupiter:4.5.1'
+  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.9.0'
+  testImplementation 'org.mockito:mockito-core:4.8.0'
+  testImplementation 'org.mockito:mockito-junit-jupiter:4.8.0'
 }
 
 application {
@@ -71,7 +71,7 @@ task fatJar(type: Jar) {
 def arch = System.getProperty("os.arch") ?: "amd64"
 
 task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.1.0/graalvm-ce-java17-linux-${arch}-22.1.0.tar.gz"
+  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/22.3.0-dev-20220910_0035/graalvm-ce-java17-linux-amd64-dev.tar.gz"
   dest new java.io.File(buildDir, "graalvm.tar.gz")
   onlyIfModified true
 }
@@ -82,7 +82,7 @@ task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
 }
 
 nativeImage {
-  graalVmHome = "${buildDir}/graalvm-ce-java17-22.1.0"
+  graalVmHome = "${buildDir}/graalvm-ce-java17-22.3.0-dev"
   mainClass = "com.github.tonivade.todo.Application"
   executableName = "todo-backend"
   arguments(
