@@ -59,7 +59,7 @@ public final class Application {
     var repository = new TodoDatabaseRepository(dao, dataSource);
     var api = new TodoAPI(repository);
 
-    return new HttpUIOService("todo backend")
+    return new HttpUIOService("todo backend", Executors.newVirtualThreadPerTaskExecutor())
         .preFilter(PreFilter.print(System.out))
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)
