@@ -18,16 +18,32 @@ repositories {
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(17)
+    languageVersion = JavaLanguageVersion.of(19)
   }
 }
 
 test {
   useJUnitPlatform()
+  
+  jvmArgs(['--enable-preview'])
 }
 
 javadoc.options {
-  addStringOption('-release', '17')
+  addStringOption('-release', '19')
+}
+
+compileJava {
+  options.compilerArgs << '-Xlint:unchecked'
+  options.compilerArgs << '-Xlint:rawtypes'
+  options.compilerArgs << '--enable-preview'
+  options.release = 19
+}
+
+compileTestJava {
+  options.compilerArgs << '-Xlint:unchecked'
+  options.compilerArgs << '-Xlint:rawtypes'
+  options.compilerArgs << '--enable-preview'
+  options.release = 19
 }
 
 dependencies {
@@ -36,15 +52,15 @@ dependencies {
   implementation 'com.github.tonivade:purefun-effect:4.0'
   implementation 'com.github.tonivade:purefun-transformer:4.0'
   runtimeOnly 'com.github.tonivade:purefun-instances:4.0'
-  implementation 'com.github.tonivade:zeromock-server:0.16.0'
+  implementation 'com.github.tonivade:zeromock-server:0.17.0-SNAPSHOT'
   implementation 'com.github.tonivade:puredbc:0.4'
   implementation 'com.github.tonivade:purecfg:0.4'
   implementation 'com.github.tonivade:purejson:0.3'
   implementation 'com.zaxxer:HikariCP:5.0.1'
   runtimeOnly 'com.h2database:h2:2.1.214'
   runtimeOnly 'ch.qos.logback:logback-classic:1.2.11'
-  testImplementation 'com.github.tonivade:zeromock-junit5:0.16.0'
-  testImplementation 'com.github.tonivade:zeromock-client:0.16.0'
+  testImplementation 'com.github.tonivade:zeromock-junit5:0.17.0-SNAPSHOT'
+  testImplementation 'com.github.tonivade:zeromock-client:0.17.0-SNAPSHOT'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
   testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.9.1'
   testImplementation 'org.mockito:mockito-core:4.8.0'
@@ -53,6 +69,7 @@ dependencies {
 
 application {
   mainClass = 'com.github.tonivade.todo.Application'
+  applicationDefaultJvmArgs << '--enable-preview'
 }
 
 task fatJar(type: Jar) {
@@ -71,7 +88,7 @@ task fatJar(type: Jar) {
 def arch = System.getProperty("os.arch") ?: "amd64"
 
 task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/22.3.0-dev-20220910_0035/graalvm-ce-java17-linux-amd64-dev.tar.gz"
+  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.0.0-dev-20221011_2158/graalvm-ce-java19-linux-amd64-dev.tar.gz"
   dest new java.io.File(buildDir, "graalvm.tar.gz")
   onlyIfModified true
 }
@@ -82,15 +99,16 @@ task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
 }
 
 nativeImage {
-  graalVmHome = "${buildDir}/graalvm-ce-java17-22.3.0-dev"
+  graalVmHome = "${buildDir}/graalvm-ce-java19-23.0.0-dev"
   mainClass = "com.github.tonivade.todo.Application"
   executableName = "todo-backend"
   arguments(
           '--verbose',
           '--report-unsupported-elements-at-runtime',
-          '--initialize-at-build-time',
           '--no-fallback',
+          '--enable-preview',
           '--allow-incomplete-classpath',
+          '--initialize-at-run-time=com.oracle.truffle.js.scriptengine.GraalJSEngineFactory',
           '-H:IncludeResources=application.toml',
           '-H:ReflectionConfigurationFiles=src/native-image/reflection.json'
   )

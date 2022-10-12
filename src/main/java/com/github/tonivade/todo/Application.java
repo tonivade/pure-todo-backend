@@ -15,6 +15,8 @@ import static com.github.tonivade.zeromock.api.Matchers.patch;
 import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
 
+import java.util.concurrent.Executors;
+
 import javax.sql.DataSource;
 
 import com.github.tonivade.todo.application.TodoAPI;
@@ -42,7 +44,9 @@ public final class Application {
   protected static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
     var server = UIOMockHttpServer.builder()
         .host(config.server().host())
-        .port(config.server().port()).build();
+        .port(config.server().port())
+        .executor(Executors.newVirtualThreadPerTaskExecutor())
+        .build();
     return server.mount("/todo", service);
   }
 
@@ -55,7 +59,7 @@ public final class Application {
     var repository = new TodoDatabaseRepository(dao, dataSource);
     var api = new TodoAPI(repository);
 
-    return new HttpUIOService("todo backend")
+    return new HttpUIOService("todo backend", Executors.newVirtualThreadPerTaskExecutor())
         .preFilter(PreFilter.print(System.out))
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)
