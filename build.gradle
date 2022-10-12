@@ -69,6 +69,7 @@ dependencies {
 
 application {
   mainClass = 'com.github.tonivade.todo.Application'
+  applicationDefaultJvmArgs << '--enable-preview'
 }
 
 task fatJar(type: Jar) {
