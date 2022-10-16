@@ -4,22 +4,23 @@
  */
 package com.github.tonivade.todo;
 
-import static com.github.tonivade.zeromock.api.Bytes.asBytes;
-import static com.github.tonivade.zeromock.api.Bytes.asString;
 import static com.github.tonivade.zeromock.api.Requests.delete;
 import static com.github.tonivade.zeromock.api.Requests.get;
 import static com.github.tonivade.zeromock.api.Requests.patch;
 import static com.github.tonivade.zeromock.api.Requests.post;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.github.tonivade.zeromock.client.UIOHttpClient.parse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.groups.Tuple.tuple;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.net.HttpRetryException;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.github.tonivade.purejson.PureJson;
+import com.github.tonivade.purefun.Function1;
+import com.github.tonivade.purefun.data.ImmutableList;
+import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.application.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpRequest;
@@ -36,134 +37,115 @@ class EndToEndTest {
   
   private static final String TODO = "/todo";
 
-  private Config config = Application.loadConfig();
+  final Config config = Application.loadConfig();
+
+  final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
   
   @Mount(TODO)
-  private HttpUIOService service = Application.buildService(config);
+  final HttpUIOService service = Application.buildService(config);
   
   @Test
   void emptyArrayWhenEmpty(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
+    var result = client.request(deleteAll())
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-    assertEquals(asBytes("[]"), response.body());
+    assertThat(result).isEmpty();
   }
   
   @Test
   void createItem(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
+    var result = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
+        .flatMap(expects(HttpStatus.CREATED))
+        .flatMap(parse(TodoDTO.class))
         .unsafeRunSync();
-    
-    assertEquals(HttpStatus.CREATED, response.status());
 
-    TodoDTO dto = parseItem(response);
-    assertNotNull(dto.url());
-    assertEquals("asdfg", dto.title());
+    assertThat(result.title()).isEqualTo("asdfg");
+    assertThat(result.url()).isEqualTo("https://tonivade.es/todo/" + result.id());
   }
   
   @Test
   void afterCreateItemThenReturned(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
+    var result = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(1, list.size());
-    assertEquals("asdfg", list.get(0).title());
+    assertThat(result).extracting(TodoDTO::title).containsExactly("asdfg");
   }
   
   @Test
   void createTwoItems(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
+    var result = client.request(deleteAll())
         .andThen(client.request(createNew("asdfg")))
         .andThen(client.request(createNew("qwert")))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(2, list.size());
-    assertEquals("asdfg", list.get(0).title());
-    assertEquals("qwert", list.get(1).title());
+    assertThat(result).extracting(TodoDTO::title).containsExactly("asdfg", "qwert");
   }
   
   @Test
   void updateTitle(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
-        .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
+    var result = client.request(deleteAll())
+        .andThen(client.request(createNew("asdfg")))
+        .flatMap(parse(TodoDTO.class))
         .flatMap(item -> client.request(updateTitle(item.id(), "qwert")))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(1, list.size());
-    assertEquals("qwert", list.get(0).title());
+    assertThat(result).extracting(TodoDTO::title).containsExactly("qwert");
   }
   
   @Test
   void updateOrder(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
-        .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
+    var result = client.request(deleteAll())
+        .andThen(client.request(createNew("asdfg")))
+        .flatMap(parse(TodoDTO.class))
         .flatMap(item -> client.request(updateOrder(item.id(), 3)))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(1, list.size());
-    assertEquals(3, list.get(0).order());
+    assertThat(result).extracting(TodoDTO::order).containsExactly(3);
   }
   
   @Test
   void updateCompleted(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
-        .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
+    var result = client.request(deleteAll())
+        .andThen(client.request(createNew("asdfg")))
+        .flatMap(parse(TodoDTO.class))
         .flatMap(item -> client.request(updateCompleted(item.id(), true)))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(1, list.size());
-    assertEquals(true, list.get(0).completed());
+    assertThat(result).extracting(TodoDTO::completed).containsExactly(true);
   }
   
   @Test
   void updateTitleOrderAndCompleted(UIOMockHttpServer server, UIOHttpClient client) {
-    HttpResponse response = client.request(deleteAll())
-        .andThen(client.request(createNew("asdfg"))).map(this::parseItem)
+    var result = client.request(deleteAll())
+        .andThen(client.request(createNew("asdfg")))
+        .flatMap(parse(TodoDTO.class))
         .flatMap(item -> client.request(updateTitleOrderAndCompleted(item.id(), "qwert", 3, true)))
         .andThen(client.request(getAll()))
+        .flatMap(expects(HttpStatus.OK))
+        .flatMap(parseList())
         .unsafeRunSync();
     
-    assertEquals(HttpStatus.OK, response.status());
-
-    List<TodoDTO> list = parseList(response);
-    assertEquals(1, list.size());
-    TodoDTO item = list.get(0);
-    assertEquals("qwert", item.title());
-    assertEquals(3, item.order());
-    assertEquals(true, item.completed());
-  }
-
-  private List<TodoDTO> parseList(HttpResponse response) {
-    Type listOfTodos = new TypeToken<List<TodoDTO>>() {}.getType();
-    return new PureJson<List<TodoDTO>>(listOfTodos).fromJson(asString(response.body())).getOrElseThrow().getOrElseThrow();
-  }
-
-  private TodoDTO parseItem(HttpResponse response) {
-    return new PureJson<>(TodoDTO.class).fromJson(asString(response.body())).getOrElseThrow().getOrElseThrow();
+    assertThat(result).extracting(TodoDTO::title, TodoDTO::order, TodoDTO::completed).containsExactly(tuple("qwert", 3, true));
   }
 
   private HttpRequest deleteAll() {
@@ -221,5 +203,15 @@ class EndToEndTest {
           """
           {"completed": %s}
           """.formatted(completed));
+  }
+
+  private Function1<HttpResponse, UIO<ImmutableList<TodoDTO>>> parseList() {
+    return UIOHttpClient.<ImmutableList<TodoDTO>>parse(listOfTodos);
+  }
+
+  private Function1<HttpResponse, UIO<HttpResponse>> expects(HttpStatus status) {
+    return response -> response.status() != status
+        ? UIO.raiseError(new HttpRetryException("error", response.status().code()))
+        : UIO.pure(response);
   }
 }
