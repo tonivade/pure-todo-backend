@@ -51,11 +51,12 @@ class EndToEndTest extends UIOTestSpec<String> {
   
   @Test
   void test(UIOMockHttpServer server, UIOHttpClient client) {
+    var todoClient = new TodoClient(client);
     
     var suite = suite("Pure Todo Backend End2End",
 
       it.should("return empty array when empty")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
           .andThen(c.getAll())
           .flatMap(expects(HttpStatus.OK))
@@ -63,7 +64,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listIsEmpty()),
 
       it.should("create new items")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(expects(HttpStatus.CREATED))
@@ -72,7 +73,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .andThen(startsWith("https://tonivade.es/todo/").compose(TodoDTO::url))),
 
       it.should("return new items after created")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .andThen(c.getAll())
@@ -81,7 +82,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::title, "asdfg")),
 
       it.should("return two items after created")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .andThen(c.createNew("qwert"))
@@ -91,7 +92,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::title, "asdfg", "qwert")),
 
       it.should("update title")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
@@ -102,7 +103,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::title, "qwert")),
 
       it.should("update order")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
@@ -113,7 +114,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::order, 3)),
 
       it.should("update completed")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
@@ -124,7 +125,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::completed, true)),
 
       it.should("update title, order and completed")
-        .given(new TodoClient(client))
+        .given(todoClient)
         .run(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
