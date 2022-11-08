@@ -6,7 +6,6 @@ package com.github.tonivade.todo;
 
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.Validator.equalsTo;
-import static com.github.tonivade.purefun.Validator.startsWith;
 import static com.github.tonivade.purefun.data.Sequence.listOf;
 import static com.github.tonivade.purefun.type.Validation.invalid;
 import static com.github.tonivade.purefun.type.Validation.valid;
@@ -41,18 +40,18 @@ import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
 @ExtendWith(MockHttpServerExtension.class)
 class EndToEndTest extends UIOTestSpec<String> {
-  
+
   private static final String TODO = "/todo";
 
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
-  
+
   @Mount(TODO)
   final HttpUIOService service = buildService(loadConfig());
-  
+
   @Test
   void test(UIOMockHttpServer server, UIOHttpClient client) {
     var todoClient = new TodoClient(client);
-    
+
     var suite = suite("Pure Todo Backend End2End",
 
       it.should("return empty array when empty")
@@ -70,7 +69,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(expects(HttpStatus.CREATED))
             .flatMap(parseItem()))
         .thenMustBe(equalsTo("asdfg").compose(TodoDTO::title)
-            .andThen(startsWith("https://tonivade.es/todo/").compose(TodoDTO::url))),
+            .andThen(urlShouldBeValid())),
 
       it.should("return new items after created")
         .given(todoClient)
@@ -136,14 +135,18 @@ class EndToEndTest extends UIOTestSpec<String> {
         .thenMustBe(listContainsItems(TodoDTO::completed, true)
             .andThen(listContainsItems(TodoDTO::order, 3)
             .andThen(listContainsItems(TodoDTO::title, "qwert"))))
-      
+
     );
-    
+
     var report = suite.run();
-    
+
     System.out.println(report);
-    
+
     report.assertion();
+  }
+
+  private Validator<String, TodoDTO> urlShouldBeValid() {
+    return dto -> dto.url().equals("https://tonivade.es" + TODO + "/" + dto.id()) ? valid(dto) : invalid("url not valid: " + dto.url());
   }
 
   @SafeVarargs
@@ -154,14 +157,14 @@ class EndToEndTest extends UIOTestSpec<String> {
   private <T> Validator<String, ImmutableList<T>> listIsEmpty() {
     return list -> list.isEmpty() ? valid(list) : invalid("list is not empty");
   }
-  
+
   private static final class TodoClient {
-    
+
     private static final String APPLICATION_JSON = "application/json";
     private static final String CONTENT_TYPE = "Content-type";
-    
+
     private final UIOHttpClient client;
-    
+
     public TodoClient(UIOHttpClient client) {
       this.client = checkNonNull(client);
     }
@@ -188,7 +191,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
             """
-            { 
+            {
                 "title": "%s",
                 "order": %s,
                 "completed": %s
