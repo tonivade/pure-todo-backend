@@ -55,83 +55,83 @@ class EndToEndTest extends UIOTestSpec<String> {
 
       it.should("return empty array when empty")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
           .andThen(c.getAll())
           .flatMap(expects(HttpStatus.OK))
           .flatMap(parseList()))
-        .thenMustBe(listIsEmpty()),
+        .then(listIsEmpty()),
 
       it.should("create new items")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(expects(HttpStatus.CREATED))
             .flatMap(parseItem()))
-        .thenMustBe(equalsTo("asdfg").compose(TodoDTO::title)
+        .then(equalsTo("asdfg").compose(TodoDTO::title)
             .andThen(urlShouldBeValid())),
 
       it.should("return new items after created")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::title, "asdfg")),
+        .then(listContainsItems(TodoDTO::title, "asdfg")),
 
       it.should("return two items after created")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .andThen(c.createNew("qwert"))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::title, "asdfg", "qwert")),
+        .then(listContainsItems(TodoDTO::title, "asdfg", "qwert")),
 
       it.should("update title")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
             .flatMap(item -> c.updateTitle(item.id(), "qwert"))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::title, "qwert")),
+        .then(listContainsItems(TodoDTO::title, "qwert")),
 
       it.should("update order")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
             .flatMap(item -> c.updateOrder(item.id(), 3))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::order, 3)),
+        .then(listContainsItems(TodoDTO::order, 3)),
 
       it.should("update completed")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
             .flatMap(item -> c.updateCompleted(item.id(), true))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::completed, true)),
+        .then(listContainsItems(TodoDTO::completed, true)),
 
       it.should("update title, order and completed")
         .given(todoClient)
-        .run(c -> c.deleteAll()
+        .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .flatMap(parseItem())
             .flatMap(item -> c.updateTitleOrderAndCompleted(item.id(), "qwert", 3, true))
             .andThen(c.getAll())
             .flatMap(expects(HttpStatus.OK))
             .flatMap(parseList()))
-        .thenMustBe(listContainsItems(TodoDTO::completed, true)
+        .then(listContainsItems(TodoDTO::completed, true)
             .andThen(listContainsItems(TodoDTO::order, 3)
             .andThen(listContainsItems(TodoDTO::title, "qwert"))))
 
@@ -150,11 +150,13 @@ class EndToEndTest extends UIOTestSpec<String> {
 
   @SafeVarargs
   private <T, I> Validator<String, ImmutableList<T>> listContainsItems(Function1<T, I> extractor, I...items) {
-    return list -> list.size() == items.length && list.map(extractor).containsAll(listOf(items)) ? valid(list) : invalid("list does not contains items %s".formatted(items));
+    return Validator.from(
+        list -> list.size() == items.length && list.map(extractor).containsAll(listOf(items)), 
+        () -> "list does not contains items %s".formatted(items));
   }
 
   private <T> Validator<String, ImmutableList<T>> listIsEmpty() {
-    return list -> list.isEmpty() ? valid(list) : invalid("list is not empty");
+    return Validator.from(ImmutableList::isEmpty, () -> "list is not empty");
   }
 
   private static final class TodoClient {
