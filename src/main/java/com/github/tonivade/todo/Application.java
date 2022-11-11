@@ -31,6 +31,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 public final class Application {
 
+  static final String TODO = "/todo";
+
   public static void main(String[] args) {
     var config = loadConfig();
 
@@ -47,7 +49,7 @@ public final class Application {
         .port(config.server().port())
         .executor(Executors.newVirtualThreadPerTaskExecutor())
         .build();
-    return server.mount("/todo", service);
+    return server.mount(TODO, service);
   }
 
   protected static HttpUIOService buildService(Config config) {
@@ -59,7 +61,7 @@ public final class Application {
     var repository = new TodoDatabaseRepository(dao, dataSource);
     var api = new TodoAPI(repository);
 
-    return new HttpUIOService("todo backend", Executors.newVirtualThreadPerTaskExecutor())
+    return new HttpUIOService("todo backend")
         .preFilter(PreFilter.print(System.out))
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)

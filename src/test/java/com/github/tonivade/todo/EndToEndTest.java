@@ -9,6 +9,7 @@ import static com.github.tonivade.purefun.Validator.equalsTo;
 import static com.github.tonivade.purefun.data.Sequence.listOf;
 import static com.github.tonivade.purefun.type.Validation.invalid;
 import static com.github.tonivade.purefun.type.Validation.valid;
+import static com.github.tonivade.todo.Application.TODO;
 import static com.github.tonivade.todo.Application.buildService;
 import static com.github.tonivade.todo.Application.loadConfig;
 import static com.github.tonivade.zeromock.api.Requests.delete;
@@ -40,8 +41,6 @@ import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
 @ExtendWith(MockHttpServerExtension.class)
 class EndToEndTest extends UIOTestSpec<String> {
-
-  private static final String TODO = "/todo";
 
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
 
