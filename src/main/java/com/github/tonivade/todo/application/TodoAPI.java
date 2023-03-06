@@ -6,6 +6,7 @@ package com.github.tonivade.todo.application;
 
 import static com.github.tonivade.purefun.Function1.cons;
 import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.effect.Task.liftEither;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
 import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
@@ -50,7 +51,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodoDTO(request)
-        .flatMap(t -> Task.fromEither(t.toDraft()))
+        .flatMap(liftEither(TodoDTO::toDraft))
         .flatMap(repository::create)
         .flatMap(this::serializeTodo)
         .fold(fromError(Responses::badRequest), Responses::created);
@@ -58,7 +59,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodoDTO(request)
-        .flatMap(t -> Task.fromEither(t.toDomain()))
+        .flatMap(liftEither(TodoDTO::toDomain))
         .flatMap(repository::update)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
