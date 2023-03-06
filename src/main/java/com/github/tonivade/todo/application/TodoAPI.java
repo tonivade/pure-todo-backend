@@ -143,11 +143,9 @@ public final class TodoAPI {
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
-    return error -> {
-      return switch (error) {
-        case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
-        default -> Responses.error(error);
-      };
+    return error -> switch (error) {
+      case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
+      default -> Responses.error(error);
     };
   }
 
