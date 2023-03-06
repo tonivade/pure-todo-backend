@@ -133,7 +133,13 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::completed, true)
             .andThen(listContainsItems(TodoDTO::order, 3)
-            .andThen(listContainsItems(TodoDTO::title, "qwert"))))
+            .andThen(listContainsItems(TodoDTO::title, "qwert")))),
+
+      it.should("fail if no title")
+        .given(todoClient)
+        .whenK(c -> c.deleteAll()
+            .andThen(c.createNew()))
+        .then(equalsTo(HttpStatus.BAD_REQUEST).compose(HttpResponse::status))
 
     );
 
@@ -151,7 +157,7 @@ class EndToEndTest extends UIOTestSpec<String> {
   @SafeVarargs
   private <T, I> Validator<String, ImmutableList<T>> listContainsItems(Function1<T, I> extractor, I...items) {
     return Validator.from(
-        list -> list.size() == items.length && list.map(extractor).containsAll(listOf(items)), 
+        list -> list.size() == items.length && list.map(extractor).containsAll(listOf(items)),
         () -> "list does not contains items %s".formatted(items));
   }
 
@@ -185,6 +191,15 @@ class EndToEndTest extends UIOTestSpec<String> {
             """
             {"title":"%s"}
             """.formatted(title)));
+    }
+
+    private UIO<HttpResponse> createNew() {
+      return client.request(post(TODO)
+        .withHeader(CONTENT_TYPE, APPLICATION_JSON)
+        .withBody(
+            """
+            {}
+            """));
     }
 
     private UIO<HttpResponse> updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {

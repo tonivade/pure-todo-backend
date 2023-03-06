@@ -110,7 +110,24 @@ nativeImage {
           '--enable-preview',
           '--allow-incomplete-classpath',
           '--initialize-at-run-time=com.oracle.truffle.js.scriptengine.GraalJSEngineFactory',
-          '-H:IncludeResources=application.toml',
-          '-H:ReflectionConfigurationFiles=src/native-image/reflection.json'
+          '-H:JNIConfigurationFiles=src/native-image/jni-config.json',
+          '-H:ResourceConfigurationFiles=src/native-image/resource-config.json',
+          '-H:ReflectionConfigurationFiles=src/native-image/reflect-config.json'
   )
+}
+
+task downloadUpx(type: Download) {
+  src "https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz"
+  dest new java.io.File(buildDir, "upx.tar.xz")
+  onlyIfModified true
+}
+
+task extractUpx(dependsOn: downloadUpx, type: Exec) {
+  workingDir "$buildDir"
+  commandLine 'tar', '-xvf', 'upx.tar.xz'
+}
+
+task compressExecutable(dependsOn: nativeImage, type: Exec) {
+  workingDir "$buildDir/upx-4.0.2-amd64_linux"
+  commandLine './upx', '--best', '../native-image/todo-backend'
 }

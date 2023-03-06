@@ -11,7 +11,6 @@ import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
-import static com.github.tonivade.zeromock.api.Serializers.throwableToJson;
 import java.lang.reflect.Type;
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
@@ -51,7 +50,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> create(HttpRequest request) {
     return getTodoDTO(request)
-        .map(TodoDTO::toDraft)
+        .flatMap(t -> Task.fromEither(t.toDraft()))
         .flatMap(repository::create)
         .flatMap(this::serializeTodo)
         .fold(fromError(Responses::badRequest), Responses::created);
@@ -59,7 +58,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> update(HttpRequest request) {
     return getTodoDTO(request)
-        .map(TodoDTO::toDomain)
+        .flatMap(t -> Task.fromEither(t.toDomain()))
         .flatMap(repository::update)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
@@ -144,7 +143,12 @@ public final class TodoAPI {
   }
 
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
-    return throwableToJson().andThen(t -> t.fold(Responses::error, toResponse));
+    return error -> {
+      return switch (error) {
+        case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
+        default -> Responses.error(error);
+      };
+    };
   }
 
   private Task<Bytes> serializeTodoList(Sequence<Todo> todoList) {

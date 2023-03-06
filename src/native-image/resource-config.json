@@ -1,0 +1,21 @@
+{
+  "resources":{
+  "includes":[
+    {
+      "pattern":"\\QMETA-INF/services/java.sql.Driver\\E"
+    }, 
+    {
+      "pattern":"\\Qapplication.toml\\E"
+    }, 
+    {
+      "pattern":"\\Qlogback.xml\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/h2/util/data.zip\\E"
+    }, 
+    {
+      "pattern":"\\Qorg/slf4j/impl/StaticLoggerBinder.class\\E"
+    }
+  ]},
+  "bundles":[]
+}
