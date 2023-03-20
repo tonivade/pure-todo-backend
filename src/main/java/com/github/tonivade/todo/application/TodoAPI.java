@@ -143,6 +143,7 @@ public final class TodoAPI {
     return value -> value.fold(Producer.cons(todo -> todo), v -> todo -> function.apply(todo, v));
   }
 
+  @SuppressWarnings("preview")
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
     return error -> switch (error) {
       case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
