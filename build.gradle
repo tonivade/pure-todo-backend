@@ -131,3 +131,11 @@ task compressExecutable(dependsOn: nativeImage, type: Exec) {
   workingDir "$buildDir/upx-4.0.2-amd64_linux"
   commandLine './upx', '--best', '../native-image/todo-backend'
 }
+
+installNativeImage {
+  dependsOn extractGraalvm
+}
+
+nativeImage {
+  finalizedBy compressExecutable
+}
