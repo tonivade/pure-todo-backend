@@ -19,7 +19,7 @@ repositories {
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(19)
+    languageVersion = JavaLanguageVersion.of(20)
   }
 }
 
@@ -30,21 +30,21 @@ test {
 }
 
 javadoc.options {
-  addStringOption('-release', '19')
+  addStringOption('-release', '20')
 }
 
 compileJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
   options.compilerArgs << '--enable-preview'
-  options.release = 19
+  options.release = 20
 }
 
 compileTestJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
   options.compilerArgs << '--enable-preview'
-  options.release = 19
+  options.release = 20
 }
 
 dependencies {
