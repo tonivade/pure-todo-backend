@@ -3,7 +3,7 @@ plugins {
   id 'application'
   id 'de.undercouch.download' version '5.4.0'
   id 'org.mikeneck.graalvm-native-image' version '1.4.1'
-  id 'com.github.ben-manes.versions' version '0.46.0'
+  id 'com.github.ben-manes.versions' version '0.47.0'
 }
 
 archivesBaseName = 'todo-backend'
@@ -59,14 +59,14 @@ dependencies {
   implementation 'com.github.tonivade:purejson:0.4-SNAPSHOT'
   implementation 'com.zaxxer:HikariCP:5.0.1'
   runtimeOnly 'com.h2database:h2:2.1.214'
-  runtimeOnly 'ch.qos.logback:logback-classic:1.4.6'
+  runtimeOnly 'ch.qos.logback:logback-classic:1.4.8'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.17.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:zeromock-client:0.17.0-SNAPSHOT'
   testImplementation 'com.github.tonivade:purecheck:0.4-SNAPSHOT'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
   testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.9.2'
-  testImplementation 'org.mockito:mockito-core:5.2.0'
-  testImplementation 'org.mockito:mockito-junit-jupiter:5.2.0'
+  testImplementation 'org.mockito:mockito-core:5.4.0'
+  testImplementation 'org.mockito:mockito-junit-jupiter:5.4.0'
   testImplementation 'org.assertj:assertj-core:3.24.2'
 }
 
@@ -89,7 +89,7 @@ task fatJar(type: Jar) {
 }
 
 task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.0.0-dev-20230216_0055/graalvm-ce-java19-linux-amd64-dev.tar.gz"
+  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.1.0-dev-20230616_1155/graalvm-community-java20-linux-amd64-dev.tar.gz"
   dest new java.io.File(buildDir, "graalvm.tar.gz")
   onlyIfModified true
 }
@@ -100,7 +100,7 @@ task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
 }
 
 nativeImage {
-  graalVmHome = "${buildDir}/graalvm-ce-java19-23.0.0-dev"
+  graalVmHome = "${buildDir}/graalvm-community-openjdk-20.0.1+9.1/"
   mainClass = "com.github.tonivade.todo.Application"
   executableName = "todo-backend"
   arguments(
@@ -127,7 +127,7 @@ task extractUpx(dependsOn: downloadUpx, type: Exec) {
   commandLine 'tar', '-xvf', 'upx.tar.xz'
 }
 
-task compressExecutable(dependsOn: nativeImage, type: Exec) {
+task compressExecutable(dependsOn: extractUpx, type: Exec) {
   workingDir "$buildDir/upx-4.0.2-amd64_linux"
   commandLine './upx', '--best', '../native-image/todo-backend'
 }
