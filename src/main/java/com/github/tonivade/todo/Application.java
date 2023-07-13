@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import javax.sql.DataSource;
 
 import com.github.tonivade.todo.application.TodoAPI;
+import com.github.tonivade.todo.application.TodoApp;
 import com.github.tonivade.todo.infrastructure.TodoDAO;
 import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
 import com.github.tonivade.zeromock.api.HttpUIOService;
@@ -60,9 +61,11 @@ public final class Application {
 
     var repository = new TodoDatabaseRepository(dao, dataSource);
     var api = new TodoAPI(repository);
+    var app = new TodoApp();
 
     return new HttpUIOService("todo backend")
         .preFilter(PreFilter.print(System.out))
+        .when(get("/index")).then(app::index)
         .when(get("/:id")).then(api::find)
         .when(get("/")).then(api::findAll)
         .when(post("/")).then(api::create)
