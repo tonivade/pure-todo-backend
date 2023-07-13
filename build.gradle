@@ -61,6 +61,8 @@ dependencies {
   implementation 'com.github.tonivade:purecfg:0.5-SNAPSHOT'
   implementation 'com.github.tonivade:purejson:0.4-SNAPSHOT'
   implementation 'com.zaxxer:HikariCP:5.0.1'
+  implementation 'com.j2html:j2html:1.6.0'
+  implementation 'org.webjars.npm:htmx.org:1.9.2'
   runtimeOnly 'com.h2database:h2:2.2.220'
   runtimeOnly 'ch.qos.logback:logback-classic:1.4.8'
   testImplementation 'com.github.tonivade:zeromock-junit5:0.17.0-SNAPSHOT'
