@@ -6,8 +6,11 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.47.0'
 }
 
-archivesBaseName = 'todo-backend'
 version = '0.1.0-SNAPSHOT'
+
+base {
+  archivesBaseName = 'todo-backend'
+}
 
 repositories {
   mavenLocal()
