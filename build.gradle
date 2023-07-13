@@ -6,8 +6,6 @@ plugins {
   id 'com.github.ben-manes.versions' version '0.47.0'
 }
 
-version = '0.1.0-SNAPSHOT'
-
 base {
   archivesBaseName = 'todo-backend'
 }
@@ -92,7 +90,7 @@ task fatJar(type: Jar) {
 }
 
 task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/23.1.0-dev-20230616_1155/graalvm-community-java20-linux-amd64-dev.tar.gz"
+  src "https://github.com/graalvm/graalvm-ce-dev-builds/releases/download/${graalvm_version}/graalvm-community-java20-linux-amd64-dev.tar.gz"
   dest new java.io.File(buildDir, "graalvm.tar.gz")
   onlyIfModified true
 }
@@ -120,7 +118,7 @@ nativeImage {
 }
 
 task downloadUpx(type: Download) {
-  src "https://github.com/upx/upx/releases/download/v4.0.2/upx-4.0.2-amd64_linux.tar.xz"
+  src "https://github.com/upx/upx/releases/download/v${upx_version}/upx-${upx_version}-amd64_linux.tar.xz"
   dest new java.io.File(buildDir, "upx.tar.xz")
   onlyIfModified true
 }
@@ -131,7 +129,7 @@ task extractUpx(dependsOn: downloadUpx, type: Exec) {
 }
 
 task compressExecutable(dependsOn: extractUpx, type: Exec) {
-  workingDir "$buildDir/upx-4.0.2-amd64_linux"
+  workingDir "$buildDir/upx-${upx_version}-amd64_linux"
   commandLine './upx', '--best', '../native-image/todo-backend'
 }
 
