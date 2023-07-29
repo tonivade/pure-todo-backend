@@ -49,26 +49,27 @@ compileTestJava {
 }
 
 dependencies {
-  annotationProcessor 'com.github.tonivade:purejson:0.4'
-  implementation 'com.github.tonivade:purefun-monad:4.1'
-  implementation 'com.github.tonivade:purefun-effect:4.1'
-  implementation 'com.github.tonivade:purefun-transformer:4.1'
-  runtimeOnly 'com.github.tonivade:purefun-instances:4.1'
-  implementation 'com.github.tonivade:zeromock-server:0.17.0'
-  implementation 'com.github.tonivade:puredbc:0.5'
-  implementation 'com.github.tonivade:purecfg:0.5'
-  implementation 'com.github.tonivade:purejson:0.4'
-  implementation 'com.zaxxer:HikariCP:5.0.1'
-  runtimeOnly 'com.h2database:h2:2.2.220'
-  runtimeOnly 'ch.qos.logback:logback-classic:1.4.8'
-  testImplementation 'com.github.tonivade:zeromock-junit5:0.17.0'
-  testImplementation 'com.github.tonivade:zeromock-client:0.17.0'
-  testImplementation 'com.github.tonivade:purecheck:0.4'
-  testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
-  testRuntimeOnly 'org.junit.platform:junit-platform-runner:1.10.0'
-  testImplementation 'org.mockito:mockito-core:5.4.0'
-  testImplementation 'org.mockito:mockito-junit-jupiter:5.4.0'
-  testImplementation 'org.assertj:assertj-core:3.24.2'
+  annotationProcessor "com.github.tonivade:purejson:${purejson_version}"
+  implementation "com.github.tonivade:purefun-monad:${purefun_version}"
+  implementation "com.github.tonivade:purefun-effect:${purefun_version}"
+  implementation "com.github.tonivade:purefun-transformer:${purefun_version}"
+  runtimeOnly "com.github.tonivade:purefun-instances:${purefun_version}"
+  implementation "com.github.tonivade:zeromock-server:${zeromock_version}"
+  implementation "com.github.tonivade:puredbc:${puredbc_version}"
+  implementation "com.github.tonivade:purecfg:${purecfg_version}"
+  implementation "com.github.tonivade:purejson:${purejson_version}"
+  implementation "com.zaxxer:HikariCP:${hikaricp_version}"
+  runtimeOnly "com.h2database:h2:${h2_version}"
+  runtimeOnly "ch.qos.logback:logback-classic:${logback_version}"
+
+  testImplementation "com.github.tonivade:zeromock-junit5:${zeromock_version}"
+  testImplementation "com.github.tonivade:zeromock-client:${zeromock_version}"
+  testImplementation "com.github.tonivade:purecheck:${purecheck_version}"
+  testImplementation "org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}"
+  testRuntimeOnly "org.junit.platform:junit-platform-runner:${junit_platform_version}"
+  testImplementation "org.mockito:mockito-core:${mockito_version}"
+  testImplementation "org.mockito:mockito-junit-jupiter:${mockito_version}"
+  testImplementation "org.assertj:assertj-core:${assertj_version}"
 }
 
 application {
