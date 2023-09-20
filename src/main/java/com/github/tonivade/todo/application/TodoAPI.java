@@ -12,7 +12,9 @@ import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
+
 import java.lang.reflect.Type;
+
 import com.github.tonivade.purefun.Function1;
 import com.github.tonivade.purefun.Function2;
 import com.github.tonivade.purefun.Operator1;
@@ -143,7 +145,6 @@ public final class TodoAPI {
     return value -> value.fold(Producer.cons(todo -> todo), v -> todo -> function.apply(todo, v));
   }
 
-  @SuppressWarnings("preview")
   private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
     return error -> switch (error) {
       case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
