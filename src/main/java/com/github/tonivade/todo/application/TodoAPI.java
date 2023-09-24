@@ -56,7 +56,7 @@ public final class TodoAPI {
         .flatMap(liftEither(TodoDTO::toDraft))
         .flatMap(repository::create)
         .flatMap(this::serializeTodo)
-        .fold(fromError(Responses::badRequest), Responses::created);
+        .fold(fromError(), Responses::created);
   }
 
   public UIO<HttpResponse> update(HttpRequest request) {
@@ -65,7 +65,7 @@ public final class TodoAPI {
         .flatMap(repository::update)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(Responses::badRequest), Responses::ok);
+        .fold(fromError(), Responses::ok);
   }
 
   public UIO<HttpResponse> modify(HttpRequest request) {
@@ -74,13 +74,13 @@ public final class TodoAPI {
             (id, update) -> repository.modify(id, update::apply)))
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(Responses::badRequest), Responses::ok);
+        .fold(fromError(), Responses::ok);
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
     return repository.findAll().fix(toTask())
         .flatMap(this::serializeTodoList)
-        .fold(fromError(Responses::badRequest), Responses::ok);
+        .fold(fromError(), Responses::ok);
   }
 
   public UIO<HttpResponse> find(HttpRequest request) {
@@ -89,19 +89,19 @@ public final class TodoAPI {
         .flatMap(repository::find)
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(Responses::badRequest), Responses::ok);
+        .fold(fromError(), Responses::ok);
   }
 
   public UIO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .map(Id::new)
         .flatMap(repository::delete)
-        .fold(fromError(Responses::badRequest), cons(Responses.ok()));
+        .fold(fromError(), cons(Responses.ok()));
   }
 
   public UIO<HttpResponse> deleteAll(HttpRequest request) {
      return repository.deleteAll().fix(toTask())
-        .fold(fromError(Responses::badRequest), cons(Responses.ok()));
+        .fold(fromError(), cons(Responses.ok()));
   }
 
   private Task<TodoDTO> getTodoDTO(HttpRequest request) {
@@ -145,7 +145,7 @@ public final class TodoAPI {
     return value -> value.fold(Producer.cons(todo -> todo), v -> todo -> function.apply(todo, v));
   }
 
-  private Function1<Throwable, HttpResponse> fromError(Function1<Bytes, HttpResponse> toResponse) {
+  private Function1<Throwable, HttpResponse> fromError() {
     return error -> switch (error) {
       case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
       default -> Responses.error(error);
