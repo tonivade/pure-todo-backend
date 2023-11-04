@@ -97,7 +97,7 @@ task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
 }
 
 nativeImage {
-  graalVmHome = "${buildDir}/graalvm-community-openjdk-21+35.1/"
+  graalVmHome = "${buildDir}/graalvm-community-openjdk-21.0.1+12.1/"
   mainClass = "com.github.tonivade.todo.Application"
   executableName = "todo-backend"
   arguments(
