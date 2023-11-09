@@ -1,9 +1,9 @@
 plugins {
   id 'java-library'
   id 'application'
-  id 'de.undercouch.download' version '5.5.0'
-  id 'org.mikeneck.graalvm-native-image' version '1.4.1'
-  id 'com.github.ben-manes.versions' version '0.49.0'
+  alias(libs.plugins.download)
+  alias(libs.plugins.graalvmNativeImage)
+  alias(libs.plugins.versions)
 }
 
 base {
@@ -45,27 +45,27 @@ compileTestJava {
 }
 
 dependencies {
-  annotationProcessor "com.github.tonivade:purejson:${purejson_version}"
-  implementation "com.github.tonivade:purefun-monad:${purefun_version}"
-  implementation "com.github.tonivade:purefun-effect:${purefun_version}"
-  implementation "com.github.tonivade:purefun-transformer:${purefun_version}"
-  runtimeOnly "com.github.tonivade:purefun-instances:${purefun_version}"
-  implementation "com.github.tonivade:zeromock-server:${zeromock_version}"
-  implementation "com.github.tonivade:puredbc:${puredbc_version}"
-  implementation "com.github.tonivade:purecfg:${purecfg_version}"
-  implementation "com.github.tonivade:purejson:${purejson_version}"
-  implementation "com.zaxxer:HikariCP:${hikaricp_version}"
-  runtimeOnly "com.h2database:h2:${h2_version}"
-  runtimeOnly "ch.qos.logback:logback-classic:${logback_version}"
+  annotationProcessor libs.purejson
+  implementation libs.purefunMonad
+  implementation libs.purefunEffect
+  implementation libs.purefunTransformer
+  runtimeOnly libs.purefunInstances
+  implementation libs.zeromockServer
+  implementation libs.puredbc
+  implementation libs.purecfg
+  implementation libs.purejson
+  implementation libs.hikaricp
+  runtimeOnly libs.h2
+  runtimeOnly libs.logbackClassic
 
-  testImplementation "com.github.tonivade:zeromock-junit5:${zeromock_version}"
-  testImplementation "com.github.tonivade:zeromock-client:${zeromock_version}"
-  testImplementation "com.github.tonivade:purecheck:${purecheck_version}"
-  testImplementation "org.junit.jupiter:junit-jupiter-engine:${junit_jupiter_version}"
-  testRuntimeOnly "org.junit.platform:junit-platform-runner:${junit_platform_version}"
-  testImplementation "org.mockito:mockito-core:${mockito_version}"
-  testImplementation "org.mockito:mockito-junit-jupiter:${mockito_version}"
-  testImplementation "org.assertj:assertj-core:${assertj_version}"
+  testImplementation libs.zeromockJunit5
+  testImplementation libs.zeromockClient
+  testImplementation libs.purecheck
+  testImplementation libs.junitJupiterEngine
+  testRuntimeOnly libs.junitPlatformRunner
+  testImplementation libs.mockitoCore
+  testImplementation libs.mockitoJunitJupiter
+  testImplementation libs.assertjCore
 }
 
 application {

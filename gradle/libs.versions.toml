@@ -1,0 +1,43 @@
+[versions]
+purefunVersion = "4.2-SNAPSHOT"
+purejsonVersion = "0.5-SNAPSHOT"
+purecfgVersion = "0.6-SNAPSHOT"
+puredbcVersion = "0.6-SNAPSHOT"
+purecheckVersion = "0.5-SNAPSHOT"
+zeromockVersion = "0.18.0-SNAPSHOT"
+hikaricpVersion = "5.0.1"
+h2Version = "2.2.224"
+logbackVersion = "1.4.11"
+mockitoVersion = "5.7.0"
+junitJupiterVersion = "5.10.1"
+junitPlatformVersion = "1.10.1"
+assertjVersion = "3.24.2"
+versionsVersion = "0.49.0"
+downloadVersion = "5.5.0"
+graalvmNativeImageVersion = "1.4.1"
+
+[libraries]
+purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
+purefunEffect = { group = "com.github.tonivade", name = "purefun-effect", version.ref = "purefunVersion" }
+purefunTransformer = { group = "com.github.tonivade", name = "purefun-transformer", version.ref = "purefunVersion" }
+purefunInstances = { group = "com.github.tonivade", name = "purefun-instances", version.ref = "purefunVersion" }
+zeromockServer = { group = "com.github.tonivade", name = "zeromock-server", version.ref = "zeromockVersion" }
+purecfg = { group = "com.github.tonivade", name = "purecfg", version.ref = "purecfgVersion" }
+puredbc = { group = "com.github.tonivade", name = "puredbc", version.ref = "puredbcVersion" }
+purejson = { group = "com.github.tonivade", name = "purejson", version.ref = "purejsonVersion" }
+hikaricp = { group = "com.zaxxer", name = "HikariCP", version.ref = "hikaricpVersion" }
+h2 = { group = "com.h2database", name = "h2", version.ref = "h2Version" }
+logbackClassic = { group = "ch.qos.logback", name = "logback-classic", version.ref = "logbackVersion" }
+zeromockJunit5 = { group = "com.github.tonivade", name = "zeromock-junit5", version.ref = "zeromockVersion" }
+zeromockClient = { group = "com.github.tonivade", name = "zeromock-client", version.ref = "zeromockVersion" }
+purecheck = { group = "com.github.tonivade", name = "purecheck", version.ref = "purecheckVersion" }
+junitJupiterEngine = { group = "org.junit.jupiter", name = "junit-jupiter-engine", version.ref = "junitJupiterVersion" }
+junitPlatformRunner = { group = "org.junit.platform", name = "junit-platform-runner", version.ref = "junitPlatformVersion" }
+mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoVersion" }
+mockitoJunitJupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockitoVersion" }
+assertjCore = { group = "org.assertj", name = "assertj-core", version.ref = "assertjVersion" } 
+
+[plugins]
+versions = { id = "com.github.ben-manes.versions", version.ref = "versionsVersion" }
+graalvmNativeImage = { id = "org.mikeneck.graalvm-native-image", version.ref = "graalvmNativeImageVersion" }
+download = {  id = "de.undercouch.download", version.ref = "downloadVersion" }
