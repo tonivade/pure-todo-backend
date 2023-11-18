@@ -4,10 +4,10 @@
  */
 package com.github.tonivade.todo.domain;
 
-import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.Operator1;
 import com.github.tonivade.purefun.Unit;
-import com.github.tonivade.purefun.Witness;
+import com.github.tonivade.purefun.annotation.Kind;
+import com.github.tonivade.purefun.annotation.Witness;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.transformer.OptionT;
 import com.github.tonivade.purefun.type.Option;
