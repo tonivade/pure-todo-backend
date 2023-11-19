@@ -39,11 +39,11 @@ public final class Application {
     buildServer(config, buildService(config)).start();
   }
 
-  protected static Config loadConfig() {
+  static Config loadConfig() {
     return Config.load("application.toml").getOrElseThrow();
   }
 
-  protected static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
+  static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
     var server = UIOMockHttpServer.builder()
         .host(config.server().host())
         .port(config.server().port())
@@ -52,7 +52,7 @@ public final class Application {
     return server.mount(TODO, service);
   }
 
-  protected static HttpUIOService buildService(Config config) {
+  static HttpUIOService buildService(Config config) {
     var dao = new TodoDAO();
     var dataSource = createDataSource(config);
 
