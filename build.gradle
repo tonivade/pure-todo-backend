@@ -7,7 +7,7 @@ plugins {
 }
 
 base {
-  archivesBaseName = 'todo-backend'
+  archivesName = 'todo-backend'
 }
 
 repositories {
