@@ -5,7 +5,6 @@ plugins {
   alias(libs.plugins.graalvmNativeImage)
   alias(libs.plugins.versions)
   id("org.beryx.jlink") version "3.0.1"
-  id("org.gradlex.extra-java-module-info") version "1.6"
 }
 
 base {
@@ -73,11 +72,6 @@ dependencies {
 application {
   mainClass = 'com.github.tonivade.todo.Application'
   mainModule = 'com.github.tonivade.todo'
-}
-
-extraJavaModuleInfo {
-  failOnMissingModuleInfo.set(false)
-  automaticModule("com.jayway.jsonpath:json-path", "com.jayway.jsonpath")
 }
 
 jlink {
