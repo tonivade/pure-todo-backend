@@ -12,7 +12,7 @@ mockitoVersion = "5.9.0"
 junitJupiterVersion = "5.10.1"
 junitPlatformVersion = "1.10.1"
 assertjVersion = "3.25.1"
-versionsVersion = "0.50.0"
+versionsVersion = "0.51.0"
 downloadVersion = "5.5.0"
 graalvmNativeImageVersion = "1.4.1"
 
