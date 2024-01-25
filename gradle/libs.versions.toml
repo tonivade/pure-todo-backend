@@ -1,7 +1,7 @@
 [versions]
 purefunVersion = "4.3-SNAPSHOT"
 purejsonVersion = "0.6-SNAPSHOT"
-purecfgVersion = "0.7-SNAPSHOT"
+purecfgVersion = "1.0-SNAPSHOT"
 puredbcVersion = "0.7-SNAPSHOT"
 purecheckVersion = "0.6-SNAPSHOT"
 zeromockVersion = "0.19.0-SNAPSHOT"
