@@ -15,8 +15,6 @@ import static com.github.tonivade.zeromock.api.Matchers.patch;
 import static com.github.tonivade.zeromock.api.Matchers.post;
 import static com.github.tonivade.zeromock.api.Matchers.put;
 
-import java.util.concurrent.Executors;
-
 import javax.sql.DataSource;
 
 import com.github.tonivade.todo.application.TodoAPI;
@@ -47,7 +45,6 @@ public final class Application {
     var server = UIOMockHttpServer.builder()
         .host(config.server().host())
         .port(config.server().port())
-        .executor(Executors.newVirtualThreadPerTaskExecutor())
         .build();
     return server.mount(TODO, service);
   }
