@@ -26,8 +26,8 @@ public record Config(Server server, Database database) {
   public static Validation<Result<String>, Config> load(String file) {
     return mapN(
         readConfig("server", Server.load()),
-        readConfig("database", Database.load()),
-        Config::new).validatedRun(fromToml(file));
+        readConfig("database", Database.load()))
+        .apply(Config::new).validatedRun(fromToml(file));
   }
 
   public record Server(String host, Integer port) {
@@ -39,10 +39,8 @@ public record Config(Server server, Database database) {
     }
 
     public static PureCFG<Server> load() {
-      return mapN(
-          readString("host"),
-          readInt("port"),
-          Server::new);
+      return mapN(readString("host"), readInt("port"))
+          .apply(Server::new);
     }
   }
 
@@ -55,11 +53,8 @@ public record Config(Server server, Database database) {
     }
 
     public static PureCFG<Database> load() {
-      return mapN(
-          readString("url"),
-          readString("user"),
-          readString("password"),
-          Database::new);
+      return mapN(readString("url"), readString("user"), readString("password"))
+          .apply(Database::new);
     }
   }
 }
