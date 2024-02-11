@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.todo.domain;
 
-import static com.github.tonivade.purefun.Precondition.checkPositive;
+import static com.github.tonivade.purefun.core.Precondition.checkPositive;
 
 public record Order(int value) {
   public Order {

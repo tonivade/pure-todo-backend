@@ -4,8 +4,8 @@
  */
 package com.github.tonivade.todo;
 
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
-import static com.github.tonivade.purefun.Validator.equalsTo;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Validator.equalsTo;
 import static com.github.tonivade.purefun.data.Sequence.listOf;
 import static com.github.tonivade.purefun.type.Validation.invalid;
 import static com.github.tonivade.purefun.type.Validation.valid;
@@ -25,8 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.github.tonivade.purecheck.spec.UIOTestSpec;
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Validator;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Validator;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purejson.TypeToken;

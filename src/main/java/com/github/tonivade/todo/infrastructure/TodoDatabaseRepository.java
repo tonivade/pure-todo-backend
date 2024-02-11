@@ -4,10 +4,10 @@
  */
 package com.github.tonivade.todo.infrastructure;
 
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import javax.sql.DataSource;
 import com.github.tonivade.puredbc.PureDBC;
-import com.github.tonivade.purefun.Unit;
+import com.github.tonivade.purefun.core.Unit;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;

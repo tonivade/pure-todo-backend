@@ -13,8 +13,8 @@ import static com.github.tonivade.purecfg.PureCFG.readConfig;
 import static com.github.tonivade.purecfg.PureCFG.readInt;
 import static com.github.tonivade.purecfg.PureCFG.readString;
 import static com.github.tonivade.purecfg.Source.fromToml;
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
-import static com.github.tonivade.purefun.Precondition.checkRange;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.checkRange;
 
 public record Config(Server server, Database database) {
 

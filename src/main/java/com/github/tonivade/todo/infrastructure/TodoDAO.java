@@ -10,7 +10,7 @@ import com.github.tonivade.puredbc.sql.SQL;
 import com.github.tonivade.puredbc.sql.SQL1;
 import com.github.tonivade.puredbc.sql.SQL2;
 import com.github.tonivade.puredbc.sql.SQL4;
-import com.github.tonivade.purefun.Unit;
+import com.github.tonivade.purefun.core.Unit;
 import com.github.tonivade.purefun.type.Option;
 
 public final class TodoDAO {

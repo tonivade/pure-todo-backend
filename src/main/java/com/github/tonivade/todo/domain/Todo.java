@@ -4,7 +4,7 @@
  */
 package com.github.tonivade.todo.domain;
 
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
 import com.github.tonivade.purefun.type.Option;
 

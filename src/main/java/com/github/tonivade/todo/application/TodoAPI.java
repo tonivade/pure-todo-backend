@@ -4,8 +4,8 @@
  */
 package com.github.tonivade.todo.application;
 
-import static com.github.tonivade.purefun.Function1.cons;
-import static com.github.tonivade.purefun.Precondition.checkNonNull;
+import static com.github.tonivade.purefun.core.Function1.cons;
+import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.Task.liftEither;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
 import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
@@ -15,12 +15,12 @@ import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
 
 import java.lang.reflect.Type;
 
-import com.github.tonivade.purefun.Function1;
-import com.github.tonivade.purefun.Function2;
-import com.github.tonivade.purefun.Operator1;
-import com.github.tonivade.purefun.Producer;
-import com.github.tonivade.purefun.Tuple2;
-import com.github.tonivade.purefun.Tuple3;
+import com.github.tonivade.purefun.core.Function1;
+import com.github.tonivade.purefun.core.Function2;
+import com.github.tonivade.purefun.core.Operator1;
+import com.github.tonivade.purefun.core.Producer;
+import com.github.tonivade.purefun.core.Tuple2;
+import com.github.tonivade.purefun.core.Tuple3;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
 import com.github.tonivade.purefun.effect.Task_;

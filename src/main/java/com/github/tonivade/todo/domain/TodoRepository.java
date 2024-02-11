@@ -5,8 +5,8 @@
 package com.github.tonivade.todo.domain;
 
 import com.github.tonivade.purefun.Kind;
-import com.github.tonivade.purefun.Operator1;
-import com.github.tonivade.purefun.Unit;
+import com.github.tonivade.purefun.core.Operator1;
+import com.github.tonivade.purefun.core.Unit;
 import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.transformer.OptionT;
