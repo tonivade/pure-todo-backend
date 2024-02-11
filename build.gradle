@@ -70,6 +70,7 @@ dependencies {
 
 application {
   mainClass = 'com.github.tonivade.todo.Application'
+  mainModule = 'com.github.tonivade.todo'
 }
 
 task fatJar(type: Jar) {
