@@ -1,5 +1,5 @@
 [versions]
-purefunVersion = "5.0-SNAPSHOT"
+purefunVersion = "6.0-SNAPSHOT"
 purejsonVersion = "1.0-SNAPSHOT"
 purecfgVersion = "1.0-SNAPSHOT"
 puredbcVersion = "1.0-SNAPSHOT"
