@@ -15,6 +15,9 @@ assertjVersion = "3.25.3"
 versionsVersion = "0.51.0"
 downloadVersion = "5.6.0"
 graalvmNativeImageVersion = "1.4.1"
+errorproneVersion = "2.25.0"
+errorpronePluginVersion = "3.1.0"
+nullawayVersion = "0.10.24"
 
 [libraries]
 purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
@@ -36,8 +39,11 @@ junitPlatformRunner = { group = "org.junit.platform", name = "junit-platform-run
 mockitoCore = { group = "org.mockito", name = "mockito-core", version.ref = "mockitoVersion" }
 mockitoJunitJupiter = { group = "org.mockito", name = "mockito-junit-jupiter", version.ref = "mockitoVersion" }
 assertjCore = { group = "org.assertj", name = "assertj-core", version.ref = "assertjVersion" } 
+nullaway = { group = "com.uber.nullaway", name = "nullaway", version.ref = "nullawayVersion" }
+errorprone = { group = "com.google.errorprone", name = "error_prone_core", version.ref = "errorproneVersion" }
 
 [plugins]
 versions = { id = "com.github.ben-manes.versions", version.ref = "versionsVersion" }
 graalvmNativeImage = { id = "org.mikeneck.graalvm-native-image", version.ref = "graalvmNativeImageVersion" }
 download = {  id = "de.undercouch.download", version.ref = "downloadVersion" }
+errorprone = { id = "net.ltgt.errorprone", version.ref = "errorpronePluginVersion"}

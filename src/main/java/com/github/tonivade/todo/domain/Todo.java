@@ -6,6 +6,7 @@ package com.github.tonivade.todo.domain;
 
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
+import com.github.tonivade.purefun.Nullable;
 import com.github.tonivade.purefun.type.Option;
 
 public record Todo(Option<Id> id, Title title, Option<Order> order, State state) {
@@ -31,7 +32,7 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
     return new Todo(Option.none(), new Title(title), Option.some(new Order(order)), State.DRAFT);
   }
 
-  public static Todo create(Integer id, String title, Integer order, Boolean completed) {
+  public static Todo create(@Nullable Integer id, String title, Integer order, Boolean completed) {
     return new Todo(
         Option.of(id).map(Id::new),
         new Title(title),
