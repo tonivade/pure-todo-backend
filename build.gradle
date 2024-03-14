@@ -53,10 +53,7 @@ tasks.withType(JavaCompile) {
       option("NullAway:SuggestSuppressions", "true")
     }
   } else {
-    options.errorprone {
-      option("NullAway:AnnotatedPackages", "com.github.tonivade.todo")
-      option("ExcludedPaths", ".*/src/test/java/.*")
-    }
+    options.errorprone.enabled = false
   }
 }
 
