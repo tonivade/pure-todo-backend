@@ -26,7 +26,7 @@ public interface TodoRepository<F extends Witness> {
 
   default Kind<F, Option<Todo>> modify(Id id, Operator1<Todo> update) {
     return OptionT.of(monad(), find(id))
-      .map(update::apply)
+      .map(update)
       .flatMapF(this::update);
   }
 }
