@@ -7,14 +7,11 @@ package com.github.tonivade.todo.application;
 import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.Task.liftEither;
+import static com.github.tonivade.purefun.effect.Task.liftTry;
 import static com.github.tonivade.purefun.effect.TaskOf.toTask;
 import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
-import static com.github.tonivade.zeromock.api.Serializers.objectToJson;
-
-import java.lang.reflect.Type;
-
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Function2;
 import com.github.tonivade.purefun.core.Operator1;
@@ -36,6 +33,8 @@ import com.github.tonivade.zeromock.api.Extractors;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.Responses;
+import com.github.tonivade.zeromock.api.Serializers;
+import java.lang.reflect.Type;
 
 public final class TodoAPI {
 
@@ -70,8 +69,7 @@ public final class TodoAPI {
 
   public UIO<HttpResponse> modify(HttpRequest request) {
     return getIdAndUpdate(request)
-        .flatMap(tuple -> tuple.map1(Id::new).applyTo(
-            (id, update) -> repository.modify(id, update::apply)))
+        .flatMap(tuple -> tuple.map1(Id::new).applyTo(repository::modify))
         .flatMap(Task::fromOption)
         .flatMap(this::serializeTodo)
         .fold(fromError(), Responses::ok);
@@ -154,11 +152,11 @@ public final class TodoAPI {
 
   private Task<Bytes> serializeTodoList(Sequence<Todo> todoList) {
     return Task.task(() -> todoList.map(TodoDTO::fromDomain))
-        .flatMap(objectToJson(seqOfTodos).andThen(Task::fromTry));
+        .flatMap(liftTry(Serializers.<Sequence<TodoDTO>>objectToJson(seqOfTodos)));
   }
 
   private Task<Bytes> serializeTodo(Todo todo) {
     return Task.task(() -> fromDomain(todo))
-        .flatMap(objectToJson(TodoDTO.class).andThen(Task::fromTry));
+        .flatMap(liftTry(Serializers.<TodoDTO>objectToJson()));
   }
 }
