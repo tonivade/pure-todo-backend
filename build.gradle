@@ -7,6 +7,8 @@ plugins {
   alias(libs.plugins.errorprone)
 }
 
+group = 'com.github.tonivade'
+
 base {
   archivesName = 'todo-backend'
 }
@@ -122,10 +124,7 @@ nativeImage {
           '--report-unsupported-elements-at-runtime',
           '--no-fallback',
           '--allow-incomplete-classpath',
-          '--initialize-at-run-time=com.oracle.truffle.js.scriptengine.GraalJSEngineFactory',
-          '-H:JNIConfigurationFiles=src/native-image/jni-config.json',
-          '-H:ResourceConfigurationFiles=src/native-image/resource-config.json',
-          '-H:ReflectionConfigurationFiles=src/native-image/reflect-config.json'
+          '--initialize-at-run-time=com.oracle.truffle.js.scriptengine.GraalJSEngineFactory'
   )
 }
 
