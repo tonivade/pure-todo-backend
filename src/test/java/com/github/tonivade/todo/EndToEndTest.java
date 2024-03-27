@@ -12,12 +12,13 @@ import static com.github.tonivade.purefun.type.Validation.valid;
 import static com.github.tonivade.todo.Application.TODO;
 import static com.github.tonivade.todo.Application.buildService;
 import static com.github.tonivade.todo.Application.loadConfig;
+import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
+import static com.github.tonivade.zeromock.api.HttpStatus.CREATED;
+import static com.github.tonivade.zeromock.api.HttpStatus.OK;
 import static com.github.tonivade.zeromock.api.Requests.delete;
 import static com.github.tonivade.zeromock.api.Requests.get;
 import static com.github.tonivade.zeromock.api.Requests.patch;
 import static com.github.tonivade.zeromock.api.Requests.post;
-import static com.github.tonivade.zeromock.client.UIOHttpClient.parse;
-
 import java.lang.reflect.Type;
 import java.net.HttpRetryException;
 
@@ -57,7 +58,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .given(todoClient)
         .whenK(c -> c.deleteAll()
           .andThen(c.getAll())
-          .flatMap(expects(HttpStatus.OK))
+          .flatMap(expects(OK))
           .flatMap(parseList()))
         .then(listIsEmpty()),
 
@@ -65,7 +66,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .given(todoClient)
         .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
-            .flatMap(expects(HttpStatus.CREATED))
+            .flatMap(expects(CREATED))
             .flatMap(parseItem()))
         .then(equalsTo("asdfg").compose(TodoDTO::title)
             .andThen(urlShouldBeValid())),
@@ -75,7 +76,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .whenK(c -> c.deleteAll()
             .andThen(c.createNew("asdfg"))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::title, "asdfg")),
 
@@ -85,7 +86,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .andThen(c.createNew("asdfg"))
             .andThen(c.createNew("qwert"))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::title, "asdfg", "qwert")),
 
@@ -96,7 +97,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(parseItem())
             .flatMap(item -> c.updateTitle(item.id(), "qwert"))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::title, "qwert")),
 
@@ -107,7 +108,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(parseItem())
             .flatMap(item -> c.updateOrder(item.id(), 3))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::order, 3)),
 
@@ -118,7 +119,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(parseItem())
             .flatMap(item -> c.updateCompleted(item.id(), true))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::completed, true)),
 
@@ -129,7 +130,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             .flatMap(parseItem())
             .flatMap(item -> c.updateTitleOrderAndCompleted(item.id(), "qwert", 3, true))
             .andThen(c.getAll())
-            .flatMap(expects(HttpStatus.OK))
+            .flatMap(expects(OK))
             .flatMap(parseList()))
         .then(listContainsItems(TodoDTO::completed, true)
             .andThen(listContainsItems(TodoDTO::order, 3)
@@ -139,7 +140,7 @@ class EndToEndTest extends UIOTestSpec<String> {
         .given(todoClient)
         .whenK(c -> c.deleteAll()
             .andThen(c.createNew()))
-        .then(equalsTo(HttpStatus.BAD_REQUEST).compose(HttpResponse::status))
+        .then(equalsTo(BAD_REQUEST).compose(HttpResponse::status))
 
     );
 
@@ -248,7 +249,7 @@ class EndToEndTest extends UIOTestSpec<String> {
   }
 
   private Function1<HttpResponse, UIO<TodoDTO>> parseItem() {
-    return parse(TodoDTO.class);
+    return UIOHttpClient.<TodoDTO>parse();
   }
 
   private Function1<HttpResponse, UIO<HttpResponse>> expects(HttpStatus status) {
