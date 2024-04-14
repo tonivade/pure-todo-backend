@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.todo.domain;
 
+import static com.github.tonivade.purefun.core.Precondition.check;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
 import com.github.tonivade.purefun.Nullable;
@@ -16,12 +17,8 @@ public record Todo(Option<Id> id, Title title, Option<Order> order, State state)
     checkNonNull(title, "title cannot be null");
     checkNonNull(order, "order cannot be null");
     checkNonNull(state, "state cannot be null");
-    if (state.isDraft() && id.isPresent()) {
-      throw new IllegalArgumentException("draft cannot have and non empty id");
-    }
-    if (!state.isDraft() && id.isEmpty()) {
-      throw new IllegalArgumentException("todo cannot have and empty id");
-    }
+    check(() -> !state.isDraft() || id.isEmpty(), "draft cannot have and non empty id");
+    check(() -> state.isDraft() || id.isPresent(), "draft cannot have and non empty id");
   }
 
   public static Todo draft(String title) {
