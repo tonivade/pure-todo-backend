@@ -11,7 +11,6 @@ import com.github.tonivade.purefun.core.Unit;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purefun.typeclasses.Monad;
@@ -19,7 +18,7 @@ import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
 
-public final class TodoDatabaseRepository implements TodoRepository<Task_> {
+public final class TodoDatabaseRepository implements TodoRepository<Task<?>> {
 
   private final TodoDAO dao;
   private final DataSource dataSource;
@@ -30,7 +29,7 @@ public final class TodoDatabaseRepository implements TodoRepository<Task_> {
   }
 
   @Override
-  public Monad<Task_> monad() {
+  public Monad<Task<?>> monad() {
     return Instances.monad();
   }
 

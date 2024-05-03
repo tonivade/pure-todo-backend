@@ -20,7 +20,6 @@ import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.core.Tuple3;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.Task_;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
@@ -38,11 +37,11 @@ import java.lang.reflect.Type;
 
 public final class TodoAPI {
 
-  private final TodoRepository<Task_> repository;
+  private final TodoRepository<Task<?>> repository;
 
   private final Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
 
-  public TodoAPI(TodoRepository<Task_> repository) {
+  public TodoAPI(TodoRepository<Task<?>> repository) {
     this.repository = checkNonNull(repository);
   }
 
@@ -130,7 +129,7 @@ public final class TodoAPI {
   }
 
   private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
-    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instances.<Task_>applicative()
+    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instances.<Task<?>>applicative()
         .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),

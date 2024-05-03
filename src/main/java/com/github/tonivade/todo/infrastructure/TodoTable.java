@@ -5,7 +5,6 @@
 package com.github.tonivade.todo.infrastructure;
 
 import com.github.tonivade.puredbc.sql.Field;
-import com.github.tonivade.puredbc.sql.Field_;
 import com.github.tonivade.puredbc.sql.Table4;
 import com.github.tonivade.purefun.typeclasses.TupleK;
 import com.github.tonivade.purefun.typeclasses.TupleK4;
@@ -21,9 +20,9 @@ public final class TodoTable implements Table4<Long, String, Integer, Boolean> {
   public String name() {
     return "todo";
   }
-  
+
   @Override
-  public TupleK4<Field_, Long, String, Integer, Boolean> fields() {
+  public TupleK4<Field<?>, Long, String, Integer, Boolean> fields() {
     return TupleK.of(ID, TITLE, ORDER, COMPLETED);
   }
 }
