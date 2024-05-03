@@ -7,13 +7,12 @@ package com.github.tonivade.todo.domain;
 import com.github.tonivade.purefun.Kind;
 import com.github.tonivade.purefun.core.Operator1;
 import com.github.tonivade.purefun.core.Unit;
-import com.github.tonivade.purefun.Witness;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.transformer.OptionT;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public interface TodoRepository<F extends Witness> {
+public interface TodoRepository<F> {
 
   Monad<F> monad();
 
