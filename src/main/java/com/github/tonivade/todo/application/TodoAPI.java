@@ -8,7 +8,6 @@ import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.Task.liftEither;
 import static com.github.tonivade.purefun.effect.Task.liftTry;
-import static com.github.tonivade.purefun.effect.TaskOf.toTask;
 import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
@@ -20,6 +19,7 @@ import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.core.Tuple3;
 import com.github.tonivade.purefun.data.Sequence;
 import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.effect.TaskOf;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
@@ -75,7 +75,7 @@ public final class TodoAPI {
   }
 
   public UIO<HttpResponse> findAll(HttpRequest request) {
-    return repository.findAll().fix(toTask())
+    return repository.findAll().fix(TaskOf::toTask)
         .flatMap(this::serializeTodoList)
         .fold(fromError(), Responses::ok);
   }
@@ -97,7 +97,7 @@ public final class TodoAPI {
   }
 
   public UIO<HttpResponse> deleteAll(HttpRequest request) {
-     return repository.deleteAll().fix(toTask())
+     return repository.deleteAll().fix(TaskOf::toTask)
         .fold(fromError(), cons(Responses.ok()));
   }
 
@@ -134,7 +134,7 @@ public final class TodoAPI {
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),
             getCompleted(request).map(toOperation(Todo::withCompleted)),
-            Tuple3::of).fix(toTask());
+            Tuple3::of).fix(TaskOf::toTask);
     return map3.map(tuple -> tuple.applyTo((op1, op2, op3) -> op1.andThen(op2).andThen(op3)::apply));
   }
 
