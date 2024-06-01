@@ -11,14 +11,6 @@ import static com.github.tonivade.purefun.effect.Task.liftTry;
 import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
-import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
-import static com.github.tonivade.zeromock.api.HttpStatus.INTERNAL_SERVER_ERROR;
-
-import java.lang.reflect.Type;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Function2;
 import com.github.tonivade.purefun.core.Operator1;
@@ -39,13 +31,11 @@ import com.github.tonivade.zeromock.api.Bytes;
 import com.github.tonivade.zeromock.api.Extractors;
 import com.github.tonivade.zeromock.api.HttpRequest;
 import com.github.tonivade.zeromock.api.HttpResponse;
-import com.github.tonivade.zeromock.api.ProblemDetail;
 import com.github.tonivade.zeromock.api.Responses;
 import com.github.tonivade.zeromock.api.Serializers;
+import java.lang.reflect.Type;
 
 public final class TodoAPI {
-
-  private static final Logger logger = LoggerFactory.getLogger(TodoAPI.class);
 
   private final TodoRepository<Task<?>> repository;
 
@@ -153,14 +143,9 @@ public final class TodoAPI {
   }
 
   private Function1<Throwable, HttpResponse> fromError() {
-    return error -> {
-      logger.error("error", error);
-      return switch (error) {
-        case IllegalArgumentException e ->
-          Responses.from(ProblemDetail.builder(BAD_REQUEST).detail(e.getMessage()).build());
-        default ->
-          Responses.from(ProblemDetail.builder(INTERNAL_SERVER_ERROR).detail(error.getMessage()).build());
-      };
+    return error -> switch (error) {
+      case IllegalArgumentException e -> Responses.badRequest(e.getMessage());
+      default -> Responses.error(error);
     };
   }
 
