@@ -86,12 +86,12 @@ dependencies {
 }
 
 application {
-  mainClass = 'com.github.tonivade.todo.Application'
+  mainClass = 'com.github.tonivade.todo.App'
 }
 
 task fatJar(type: Jar) {
   manifest {
-    attributes "Main-Class": "com.github.tonivade.todo.Application"
+    attributes "Main-Class": "com.github.tonivade.todo.App"
   }
   archiveClassifier = "all"
   duplicatesStrategy = "warn"
@@ -115,7 +115,7 @@ task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
 
 nativeImage {
   graalVmHome = "${buildDir}/graalvm"
-  mainClass = "com.github.tonivade.todo.Application"
+  mainClass = "com.github.tonivade.todo.App"
   executableName = "todo-backend"
   arguments(
           '-J-Xms2G',

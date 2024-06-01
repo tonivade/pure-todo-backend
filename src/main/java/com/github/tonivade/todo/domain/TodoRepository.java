@@ -12,7 +12,7 @@ import com.github.tonivade.purefun.transformer.OptionT;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Monad;
 
-public interface TodoRepository<F> {
+public interface TodoRepository<F extends Kind<F, ?>> {
 
   Monad<F> monad();
 

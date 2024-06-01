@@ -27,7 +27,7 @@ import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public final class Application {
+public final class App {
 
   static final String TODO = "/todo";
 
