@@ -17,6 +17,8 @@ import static com.github.tonivade.zeromock.api.Matchers.put;
 
 import javax.sql.DataSource;
 
+import com.github.tonivade.purefun.type.Validation;
+import com.github.tonivade.purefun.type.Validation.Result;
 import com.github.tonivade.todo.application.TodoAPI;
 import com.github.tonivade.todo.infrastructure.TodoDAO;
 import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
@@ -32,31 +34,25 @@ public final class App {
   static final String TODO = "/todo";
 
   public static void main(String[] args) {
-    var config = loadConfig();
-
-    buildServer(config, buildService(config)).start();
+    loadConfig()
+      .map(config -> buildServer(config).mount(TODO, buildService(config)))
+      .getOrElseThrow()
+      .start();
   }
 
-  static Config loadConfig() {
-    return Config.load("application.toml").getOrElseThrow();
+  static Validation<Result<String>, Config> loadConfig() {
+    return Config.load("application.toml");
   }
 
-  static UIOMockHttpServer buildServer(Config config, HttpUIOService service) {
-    var server = UIOMockHttpServer.builder()
+  static UIOMockHttpServer buildServer(Config config) {
+    return UIOMockHttpServer.builder()
         .host(config.server().host())
         .port(config.server().port())
         .build();
-    return server.mount(TODO, service);
   }
 
   static HttpUIOService buildService(Config config) {
-    var dao = new TodoDAO();
-    var dataSource = createDataSource(config);
-
-    dao.create().unsafeRun(dataSource);
-
-    var repository = new TodoDatabaseRepository(dao, dataSource);
-    var api = new TodoAPI(repository);
+    var api = new TodoAPI(buildRepository(config));
 
     return new HttpUIOService("todo backend")
         .preFilter(PreFilter.print(System.out))
@@ -74,6 +70,15 @@ public final class App {
         .postFilter(enableCors())
         .postFilter(contentJson())
         .postFilter(PostFilter.print(System.out));
+  }
+
+  private static TodoDatabaseRepository buildRepository(Config config) {
+    var dao = new TodoDAO();
+    var dataSource = createDataSource(config);
+
+    dao.create().unsafeRun(dataSource);
+
+    return new TodoDatabaseRepository(dao, dataSource);
   }
 
   private static DataSource createDataSource(Config config) {

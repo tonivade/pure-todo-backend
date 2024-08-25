@@ -46,7 +46,7 @@ class EndToEndTest extends UIOTestSpec<String> {
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
 
   @Mount(TODO)
-  final HttpUIOService service = buildService(loadConfig());
+  final HttpUIOService service = buildService(loadConfig().getOrElseThrow());
 
   @Test
   void test(UIOMockHttpServer server, UIOHttpClient client) {
@@ -241,6 +241,11 @@ class EndToEndTest extends UIOTestSpec<String> {
             """
             {"completed": %s}
             """.formatted(completed)));
+    }
+
+    @Override
+    public String toString() {
+      return "TodoClient";
     }
   }
 
