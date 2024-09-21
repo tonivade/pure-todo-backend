@@ -10,8 +10,6 @@ import static com.github.tonivade.purefun.data.Sequence.listOf;
 import static com.github.tonivade.purefun.type.Validation.invalid;
 import static com.github.tonivade.purefun.type.Validation.valid;
 import static com.github.tonivade.todo.App.TODO;
-import static com.github.tonivade.todo.App.buildService;
-import static com.github.tonivade.todo.App.loadConfig;
 import static com.github.tonivade.zeromock.api.HttpStatus.BAD_REQUEST;
 import static com.github.tonivade.zeromock.api.HttpStatus.CREATED;
 import static com.github.tonivade.zeromock.api.HttpStatus.OK;
@@ -46,7 +44,7 @@ class EndToEndTest extends UIOTestSpec<String> {
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
 
   @Mount(TODO)
-  final HttpUIOService service = buildService(loadConfig().getOrElseThrow());
+  final HttpUIOService service = App.loadConfig().map(App::buildService).getOrElseThrow();
 
   @Test
   void test(UIOMockHttpServer server, UIOHttpClient client) {
