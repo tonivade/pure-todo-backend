@@ -4,6 +4,7 @@
  */
 package com.github.tonivade.todo;
 
+import static com.github.tonivade.purecfg.Source.fromToml;
 import static com.github.tonivade.purefun.core.Matcher1.isNotNull;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
@@ -41,7 +42,7 @@ public final class App {
   }
 
   static Validation<Result<String>, Config> loadConfig() {
-    return Config.load("application.toml");
+    return Config.load().validatedRun(fromToml("application.toml"));
   }
 
   static UIOMockHttpServer buildServer(Config config) {
@@ -74,18 +75,18 @@ public final class App {
 
   private static TodoDatabaseRepository buildRepository(Config config) {
     var dao = new TodoDAO();
-    var dataSource = createDataSource(config);
+    var dataSource = createDataSource(config.database());
 
     dao.create().unsafeRun(dataSource);
 
     return new TodoDatabaseRepository(dao, dataSource);
   }
 
-  private static DataSource createDataSource(Config config) {
+  private static DataSource createDataSource(Config.Database database) {
     var configuration = new HikariConfig();
-    configuration.setJdbcUrl(config.database().url());
-    configuration.setUsername(config.database().user());
-    configuration.setPassword(config.database().password());
+    configuration.setJdbcUrl(database.url());
+    configuration.setUsername(database.user());
+    configuration.setPassword(database.password());
     return new HikariDataSource(configuration);
   }
 }
