@@ -63,7 +63,7 @@ public final class TodoDatabaseRepository implements TodoRepository<Task<?>> {
     return dao.find(todo.getId()).flatMap(
         option -> {
           if (option.isPresent()) {
-            return dao.update(TodoEntity.fromDomain(todo)).map(ignore -> Option.some(todo));
+            return dao.update(TodoEntity.fromDomain(todo)).map(_ -> Option.some(todo));
           }
           return PureDBC.pure(Option.<Todo>none());
         }).safeRunIO(dataSource);
