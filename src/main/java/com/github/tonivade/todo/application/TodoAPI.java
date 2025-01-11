@@ -133,8 +133,8 @@ public final class TodoAPI {
         .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),
-            getCompleted(request).map(toOperation(Todo::withCompleted)),
-            Tuple3::of).fix(TaskOf::toTask);
+            getCompleted(request).map(toOperation(Todo::withCompleted)))
+        .apply(Tuple3::of).fix(TaskOf::toTask);
     return map3.map(tuple -> tuple.applyTo((op1, op2, op3) -> op1.andThen(op2).andThen(op3)::apply));
   }
 
