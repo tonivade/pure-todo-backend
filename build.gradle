@@ -75,11 +75,12 @@ dependencies {
   runtimeOnly libs.h2
   runtimeOnly libs.logbackClassic
 
+  testImplementation platform(libs.junitBom)
   testImplementation libs.zeromockJunit5
   testImplementation libs.zeromockClient
   testImplementation libs.purecheck
-  testImplementation libs.junitJupiterEngine
-  testRuntimeOnly libs.junitPlatformRunner
+  testImplementation libs.junitJupiter
+  testRuntimeOnly libs.junitLauncher
   testImplementation libs.mockitoCore
   testImplementation libs.mockitoJunitJupiter
   testImplementation libs.assertjCore
