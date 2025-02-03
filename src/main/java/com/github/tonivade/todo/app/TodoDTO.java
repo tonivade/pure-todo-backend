@@ -2,7 +2,7 @@
  * Copyright (c) 2020-2024, Antonio Gabriel Muñoz Conejo <me at tonivade dot es>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.todo.application;
+package com.github.tonivade.todo.app;
 
 import static com.github.tonivade.purefun.type.Validation.mapN;
 import static com.github.tonivade.purefun.type.Validation.requireNonEmpty;

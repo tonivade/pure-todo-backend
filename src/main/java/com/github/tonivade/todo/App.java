@@ -20,9 +20,9 @@ import javax.sql.DataSource;
 
 import com.github.tonivade.purefun.type.Validation;
 import com.github.tonivade.purefun.type.Validation.Result;
-import com.github.tonivade.todo.application.TodoAPI;
-import com.github.tonivade.todo.infrastructure.TodoDAO;
-import com.github.tonivade.todo.infrastructure.TodoDatabaseRepository;
+import com.github.tonivade.todo.app.TodoAPI;
+import com.github.tonivade.todo.infra.TodoDAO;
+import com.github.tonivade.todo.infra.TodoDatabaseRepository;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;

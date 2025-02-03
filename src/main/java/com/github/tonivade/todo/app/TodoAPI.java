@@ -2,13 +2,13 @@
  * Copyright (c) 2020-2024, Antonio Gabriel Muñoz Conejo <me at tonivade dot es>
  * Distributed under the terms of the MIT License
  */
-package com.github.tonivade.todo.application;
+package com.github.tonivade.todo.app;
 
 import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.effect.Task.liftEither;
 import static com.github.tonivade.purefun.effect.Task.liftTry;
-import static com.github.tonivade.todo.application.TodoDTO.fromDomain;
+import static com.github.tonivade.todo.app.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
 import com.github.tonivade.purefun.core.Function1;

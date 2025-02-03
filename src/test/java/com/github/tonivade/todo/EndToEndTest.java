@@ -29,7 +29,7 @@ import com.github.tonivade.purefun.core.Validator;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.effect.UIO;
 import com.github.tonivade.purejson.TypeToken;
-import com.github.tonivade.todo.application.TodoDTO;
+import com.github.tonivade.todo.app.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpUIOService;
