@@ -8,14 +8,9 @@ import static com.github.tonivade.purecfg.Source.fromToml;
 import static com.github.tonivade.purefun.core.Matcher1.isNotNull;
 import static com.github.tonivade.zeromock.api.Headers.contentJson;
 import static com.github.tonivade.zeromock.api.Headers.enableCors;
-import static com.github.tonivade.zeromock.api.Matchers.delete;
-import static com.github.tonivade.zeromock.api.Matchers.get;
 import static com.github.tonivade.zeromock.api.Matchers.jsonPath;
 import static com.github.tonivade.zeromock.api.Matchers.options;
 import static com.github.tonivade.zeromock.api.Matchers.patch;
-import static com.github.tonivade.zeromock.api.Matchers.post;
-import static com.github.tonivade.zeromock.api.Matchers.put;
-
 import javax.sql.DataSource;
 
 import com.github.tonivade.purefun.type.Validation;
@@ -57,16 +52,16 @@ public final class App {
 
     return new HttpUIOService("todo backend")
         .preFilter(PreFilter.print(System.out))
-        .when(get("/:id")).then(api::find)
-        .when(get("/")).then(api::findAll)
-        .when(post("/")).then(api::create)
-        .when(put("/:id")).then(api::update)
+        .get("/:id").then(api::find)
+        .get("/").then(api::findAll)
+        .post("/").then(api::create)
+        .put("/:id").then(api::update)
         .when(patch("/:id").and(jsonPath("$.order", isNotNull())
                 .or(jsonPath("$.title", isNotNull()))
                 .or(jsonPath("$.completed", isNotNull()))))
           .then(api::modify)
-        .when(delete("/:id")).then(api::delete)
-        .when(delete("/")).then(api::deleteAll)
+        .delete("/:id").then(api::delete)
+        .delete("/").then(api::deleteAll)
         .when(options()).then(api::cors)
         .postFilter(enableCors())
         .postFilter(contentJson())
