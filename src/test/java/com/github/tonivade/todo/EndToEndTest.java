@@ -34,11 +34,13 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
+import com.github.tonivade.zeromock.junit5.ListenAt;
 import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.junit5.Mount;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
 @ExtendWith(MockHttpServerExtension.class)
+@ListenAt(type = UIOMockHttpServer.class)
 class EndToEndTest extends UIOTestSpec<String> {
 
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
