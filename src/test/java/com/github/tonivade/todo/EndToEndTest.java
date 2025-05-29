@@ -21,8 +21,6 @@ import java.lang.reflect.Type;
 import java.net.HttpRetryException;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
 import com.github.tonivade.purecheck.spec.UIOTestSpec;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Validator;
@@ -34,13 +32,11 @@ import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
 import com.github.tonivade.zeromock.api.HttpUIOService;
 import com.github.tonivade.zeromock.client.UIOHttpClient;
-import com.github.tonivade.zeromock.junit5.ListenAt;
-import com.github.tonivade.zeromock.junit5.MockHttpServerExtension;
 import com.github.tonivade.zeromock.junit5.Mount;
+import com.github.tonivade.zeromock.junit5.Zeromock;
 import com.github.tonivade.zeromock.server.UIOMockHttpServer;
 
-@ExtendWith(MockHttpServerExtension.class)
-@ListenAt(type = UIOMockHttpServer.class)
+@Zeromock(type = UIOMockHttpServer.class)
 class EndToEndTest extends UIOTestSpec<String> {
 
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
