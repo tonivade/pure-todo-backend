@@ -13,21 +13,21 @@ jobs:
         include:
           - os: ubuntu-latest
             uploaded_filename: todo-backend-linux-amd64
-            local_path: build/native-image/todo-backend
+            local_path: build/native/nativeCompile/todo-backend
           - os: ubuntu-24.04-arm
             uploaded_filename: todo-backend-linux-arm64
-            local_path: build/native-image/todo-backend
+            local_path: build/native/nativeCompile/todo-backend
     steps:
       - uses: actions/checkout@v5
-      - name: Set up JDK 25
-        uses: actions/setup-java@v5
-        with:
-          java-version: 25
-          distribution: oracle
-          cache: gradle
 
-      - name: Native Image Linux amd64
-        run: ./gradlew nativeImage
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          java-version: '25'
+          distribution: 'graalvm'
+          native-image-job-reports: 'true'
+
+      - name: Native Image Linux
+        run: ./gradlew nativeCompile
         shell: bash
 
       - uses: actions/upload-artifact@v4

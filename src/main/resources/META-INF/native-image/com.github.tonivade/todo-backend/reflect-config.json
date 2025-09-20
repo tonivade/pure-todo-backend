@@ -75,11 +75,14 @@
   "methods":[{"name":"applicative","parameterTypes":["com.github.tonivade.purefun.typeclasses.Semigroup"] }]
 },
 {
-  "name":"com.github.tonivade.todo.application.TodoDTO",
-  "methods":[{"name":"<init>","parameterTypes":["java.lang.Integer","java.lang.String","java.lang.Integer","java.lang.Boolean","java.lang.String"] }]
+  "name":"com.github.tonivade.todo.app.TodoDTO",
+  "allDeclaredConstructors": true,
+  "allDeclaredMethods": true,
+  "allPublicMethods": true,
+  "allDeclaredFields": true
 },
 {
-  "name":"com.github.tonivade.todo.application.TodoDTOAdapter"
+  "name":"com.github.tonivade.todo.app.TodoDTOAdapter"
 },
 {
   "name":"com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl",

@@ -10,17 +10,9 @@ plugins {
 def system = org.gradle.internal.os.OperatingSystem.current()
 def arch = System.getProperty("os.arch")
 if (system.isLinux() && arch == "amd64") {
-  project.ext.osArch = "x64"
-  project.ext.opSystem = "linux"
-  project.ext.graalExt = "tar.gz"
-  project.ext.graalHome = "graalvm"
   project.ext.upxArch = "amd64_linux"
   project.ext.upxExt = "tar.xz"
 } else if (system.isLinux() && arch == "aarch64") {
-  project.ext.osArch = "aarch64"
-  project.ext.opSystem = "linux"
-  project.ext.graalExt = "tar.gz"
-  project.ext.graalHome = "graalvm"
   project.ext.upxArch = "arm64_linux"
   project.ext.upxExt = "tar.xz"
 }
@@ -121,30 +113,26 @@ task fatJar(type: Jar) {
   with jar
 }
 
-task downloadGraalvm(type: Download) {
-  src "https://github.com/graalvm/graalvm-ce-builds/releases/download/jdk-${graalvm_version}/graalvm-community-jdk-${graalvm_version}_${opSystem}-${osArch}_bin.${graalExt}"
-  dest new java.io.File(buildDir, "graalvm.tar.gz")
-  onlyIfModified true
-}
-
-task extractGraalvm(dependsOn: downloadGraalvm, type: Exec) {
-  workingDir "$buildDir"
-  commandLine 'bash', '-c', 'mkdir -p graalvm && tar -xvf graalvm.tar.gz -C graalvm --strip-components 1'
-}
-
-nativeImage {
-  graalVmHome = "${buildDir}/graalvm"
-  mainClass = "com.github.tonivade.todo.App"
-  executableName = "todo-backend"
-  arguments(
-          '-J-Xms2G',
-          '-J-Xmx2G',
-          '--verbose',
-          '--report-unsupported-elements-at-runtime',
-          '--no-fallback',
-          '--allow-incomplete-classpath',
-          '--initialize-at-run-time=com.oracle.truffle.js.scriptengine.GraalJSEngineFactory'
-  )
+graalvmNative {
+  toolchainDetection = true
+  binaries {
+    main {
+      imageName = "todo-backend"
+      mainClass = "com.github.tonivade.todo.App"
+      sharedLibrary = false
+      fallback = false
+      buildArgs.add("-O2")
+      buildArgs.add('--verbose')
+      buildArgs.add('--report-unsupported-elements-at-runtime')
+      buildArgs.add('--no-fallback')
+      buildArgs.add('--allow-incomplete-classpath')
+      buildArgs.add('-J-Xms2G')
+      buildArgs.add('-J-Xmx2G')
+    }
+    test {
+      buildArgs.add("-O0")
+    }
+  }
 }
 
 task downloadUpx(type: Download) {
@@ -160,13 +148,9 @@ task extractUpx(dependsOn: downloadUpx, type: Exec) {
 
 task compressExecutable(dependsOn: extractUpx, type: Exec) {
   workingDir "$buildDir/upx"
-  commandLine 'bash', '-c', './upx --best ../native-image/todo-backend'
+  commandLine 'bash', '-c', './upx --best ../native/nativeCompile/todo-backend'
 }
 
-installNativeImage {
-  dependsOn extractGraalvm
-}
-
-nativeImage {
+nativeCompile {
   finalizedBy compressExecutable
 }
