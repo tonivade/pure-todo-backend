@@ -30,7 +30,7 @@ jobs:
         run: ./gradlew nativeCompile
         shell: bash
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: ${{ matrix.local_path }}
           name: ${{ matrix.uploaded_filename }}
