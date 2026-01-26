@@ -45,7 +45,7 @@ public final class TodoAPI {
     this.repository = checkNonNull(repository);
   }
 
-  public UIO<HttpResponse> cors(HttpRequest request) {
+  public UIO<HttpResponse> cors() {
     return UIO.pure(Responses.ok());
   }
 
@@ -74,7 +74,7 @@ public final class TodoAPI {
         .fold(fromError(), Responses::ok);
   }
 
-  public UIO<HttpResponse> findAll(HttpRequest request) {
+  public UIO<HttpResponse> findAll() {
     return repository.findAll().fix(TaskOf::toTask)
         .flatMap(this::serializeTodoList)
         .fold(fromError(), Responses::ok);
@@ -96,7 +96,7 @@ public final class TodoAPI {
         .fold(fromError(), cons(Responses.ok()));
   }
 
-  public UIO<HttpResponse> deleteAll(HttpRequest request) {
+  public UIO<HttpResponse> deleteAll() {
      return repository.deleteAll().fix(TaskOf::toTask)
         .fold(fromError(), cons(Responses.ok()));
   }
