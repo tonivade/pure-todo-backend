@@ -16,7 +16,7 @@ downloadVersion = "5.6.0"
 graalvmNativeImageVersion = "0.11.4"
 errorproneVersion = "2.46.0"
 errorpronePluginVersion = "4.4.0"
-nullawayVersion = "0.13.0"
+nullawayVersion = "0.13.1"
 
 [libraries]
 purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
