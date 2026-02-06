@@ -14,7 +14,7 @@ assertjVersion = "3.27.7"
 versionsVersion = "0.53.0"
 downloadVersion = "5.7.0"
 graalvmNativeImageVersion = "0.11.4"
-errorproneVersion = "2.46.0"
+errorproneVersion = "2.47.0"
 errorpronePluginVersion = "5.0.0"
 nullawayVersion = "0.13.1"
 
