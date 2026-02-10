@@ -29,7 +29,7 @@ public final class TodoDAO {
   private static final SQL2<String, Integer> INSERT_TODO = SQL.insertInto(TODO).values(TODO.TITLE, TODO.ORDER);
   private static final SQL4<String, Integer, Boolean, Long> UPDATE_TODO =
       SQL.update(TODO).set(TODO.TITLE, TODO.ORDER, TODO.COMPLETED).where(TODO.ID.eq());
-  private static final SQL FIND_ALL = SQL.select(TODO.all()).from(TODO);
+  private static final SQL FIND_ALL = SQL.selectFrom(TODO);
   private static final SQL1<Long> FIND_BY_ID = FIND_ALL.where(TODO.ID.eq());
   private static final SQL DELETE_ALL = SQL.deleteFrom(TODO);
   private static final SQL1<Long> DELETE_BY_ID = DELETE_ALL.where(TODO.ID.eq());
