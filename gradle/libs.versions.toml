@@ -1,6 +1,6 @@
 [versions]
 purefunVersion = "5.2"
-purejsonVersion = "1.2-SNAPSHOT"
+purejsonVersion = "1.2"
 purecfgVersion = "1.2"
 puredbcVersion = "1.2"
 purecheckVersion = "1.2"
