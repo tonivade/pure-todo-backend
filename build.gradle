@@ -38,6 +38,10 @@ java {
   }
 }
 
+jacoco {
+  toolVersion = '0.8.14'
+}
+
 test {
   useJUnitPlatform()
 }
@@ -56,6 +60,14 @@ compileTestJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
   options.release = 25
+}
+
+jacocoTestReport {
+  reports {
+    xml.required = true
+    html.required = true
+    xml.outputLocation = file("${buildDir}/reports/jacoco/report.xml")
+  }
 }
   
 tasks.withType(JavaCompile) {
