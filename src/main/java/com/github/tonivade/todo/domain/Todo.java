@@ -7,7 +7,8 @@ package com.github.tonivade.todo.domain;
 import static com.github.tonivade.purefun.core.Precondition.check;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 
-import com.github.tonivade.purefun.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import com.github.tonivade.purefun.type.Option;
 
 public record Todo(Option<Id> id, Title title, Option<Order> order, State state) {

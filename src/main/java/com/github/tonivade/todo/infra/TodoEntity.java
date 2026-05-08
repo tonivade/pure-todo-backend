@@ -4,7 +4,8 @@
  */
 package com.github.tonivade.todo.infra;
 
-import com.github.tonivade.purefun.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import com.github.tonivade.todo.domain.Todo;
 
 public record TodoEntity(@Nullable Long id, String title, Integer order, Boolean completed) {

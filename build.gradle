@@ -97,6 +97,7 @@ dependencies {
   implementation libs.hikaricp
   runtimeOnly libs.h2
   runtimeOnly libs.logbackClassic
+  compileOnly libs.jspecify
 
   testImplementation platform(libs.junitBom)
   testImplementation libs.zeromockJunit5
