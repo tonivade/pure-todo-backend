@@ -16,7 +16,7 @@ downloadVersion = "5.7.0"
 graalvmNativeImageVersion = "1.1.4"
 errorproneVersion = "2.50.0"
 errorpronePluginVersion = "5.1.0"
-nullawayVersion = "0.13.7"
+nullawayVersion = "0.13.8"
 jspecifyVersion = "1.0.0"
 
 [libraries]
