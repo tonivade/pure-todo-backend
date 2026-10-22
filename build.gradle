@@ -34,12 +34,12 @@ repositories {
 
 java {
   toolchain {
-    languageVersion = JavaLanguageVersion.of(25)
+    languageVersion = JavaLanguageVersion.of(28)
   }
 }
 
 jacoco {
-  toolVersion = '0.8.14'
+  toolVersion = '0.8.16-SNAPSHOT'
 }
 
 test {
@@ -47,19 +47,19 @@ test {
 }
 
 javadoc.options {
-  addStringOption('-release', '25')
+  addStringOption('-release', '28')
 }
 
 compileJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
-  options.release = 25
+  options.release = 28
 }
 
 compileTestJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
-  options.release = 25
+  options.release = 28
 }
 
 jacocoTestReport {
@@ -69,7 +69,7 @@ jacocoTestReport {
     xml.outputLocation = file("${buildDir}/reports/jacoco/report.xml")
   }
 }
-  
+
 tasks.withType(JavaCompile) {
   if (!name.toLowerCase().contains("test")) {
     options.errorprone {
