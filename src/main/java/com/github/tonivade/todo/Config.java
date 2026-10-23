@@ -12,7 +12,7 @@ import static com.github.tonivade.purecfg.PureCFG.readString;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
 import static com.github.tonivade.purefun.core.Precondition.checkRange;
 
-public record Config(Server server, Database database) {
+public value record Config(Server server, Database database) {
 
   public Config {
     checkNonNull(server);

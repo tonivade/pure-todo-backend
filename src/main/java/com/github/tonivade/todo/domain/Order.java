@@ -6,7 +6,7 @@ package com.github.tonivade.todo.domain;
 
 import static com.github.tonivade.purefun.core.Precondition.checkPositive;
 
-public record Order(int value) {
+public value record Order(int value) {
   public Order {
     checkPositive(value, "order must be a positive value");
   }
