@@ -44,6 +44,7 @@ jacoco {
 
 test {
   useJUnitPlatform()
+  jvmArgs("--enable-preview")
 }
 
 javadoc.options {
@@ -53,12 +54,14 @@ javadoc.options {
 compileJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
+  options.compilerArgs << '--enable-preview'
   options.release = 28
 }
 
 compileTestJava {
   options.compilerArgs << '-Xlint:unchecked'
   options.compilerArgs << '-Xlint:rawtypes'
+  options.compilerArgs << '--enable-preview'
   options.release = 28
 }
 

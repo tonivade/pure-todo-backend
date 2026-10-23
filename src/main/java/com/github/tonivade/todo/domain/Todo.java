@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
 
 import com.github.tonivade.purefun.type.Option;
 
-public record Todo(Option<Id> id, Title title, Option<Order> order, State state) {
+public value record Todo(Option<Id> id, Title title, Option<Order> order, State state) {
 
   public Todo {
     checkNonNull(id, "id cannot be null");
