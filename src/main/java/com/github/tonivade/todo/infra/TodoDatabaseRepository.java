@@ -10,7 +10,7 @@ import com.github.tonivade.puredbc.PureDBC;
 import com.github.tonivade.purefun.core.Unit;
 import com.github.tonivade.purefun.data.ImmutableList;
 import com.github.tonivade.purefun.data.Sequence;
-import com.github.tonivade.purefun.effect.Task;
+import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purefun.typeclasses.Monad;
@@ -18,7 +18,7 @@ import com.github.tonivade.todo.domain.Id;
 import com.github.tonivade.todo.domain.Todo;
 import com.github.tonivade.todo.domain.TodoRepository;
 
-public final class TodoDatabaseRepository implements TodoRepository<Task<?>> {
+public final class TodoDatabaseRepository implements TodoRepository<IO<?>> {
 
   private final TodoDAO dao;
   private final DataSource dataSource;
@@ -29,53 +29,53 @@ public final class TodoDatabaseRepository implements TodoRepository<Task<?>> {
   }
 
   @Override
-  public Monad<Task<?>> monad() {
+  public Monad<IO<?>> monad() {
     return Instances.monad();
   }
 
   @Override
-  public Task<Todo> create(Todo todo) {
+  public IO<Todo> create(Todo todo) {
     return PureDBC.pure(todo)
         .map(TodoEntity::fromDomain)
         .flatMap(dao::insert)
         .map(Long::intValue)
         .map(todo::withId)
-        .safeRunIO(dataSource);
+        .unsafeRunIO(dataSource);
   }
 
   @Override
-  public Task<Sequence<Todo>> findAll() {
+  public IO<Sequence<Todo>> findAll() {
     return dao.findAll()
         .<Sequence<TodoEntity>>map(ImmutableList::from)
         .map(seq -> seq.map(TodoEntity::toDomain))
-        .safeRunIO(dataSource);
+        .unsafeRunIO(dataSource);
   }
 
   @Override
-  public Task<Option<Todo>> find(Id id) {
+  public IO<Option<Todo>> find(Id id) {
     return dao.find(id.value())
         .map(option -> option.map(TodoEntity::toDomain))
-        .safeRunIO(dataSource);
+        .unsafeRunIO(dataSource);
   }
 
   @Override
-  public Task<Option<Todo>> update(Todo todo) {
+  public IO<Option<Todo>> update(Todo todo) {
     return dao.find(todo.getId()).flatMap(
         option -> {
           if (option.isPresent()) {
             return dao.update(TodoEntity.fromDomain(todo)).map(_ -> Option.some(todo));
           }
           return PureDBC.pure(Option.<Todo>none());
-        }).safeRunIO(dataSource);
+        }).unsafeRunIO(dataSource);
   }
 
   @Override
-  public Task<Unit> deleteAll() {
-    return dao.deleteAll().safeRunIO(dataSource);
+  public IO<Unit> deleteAll() {
+    return dao.deleteAll().unsafeRunIO(dataSource);
   }
 
   @Override
-  public Task<Unit> delete(Id id) {
-    return dao.delete(id.value()).safeRunIO(dataSource);
+  public IO<Unit> delete(Id id) {
+    return dao.delete(id.value()).unsafeRunIO(dataSource);
   }
 }

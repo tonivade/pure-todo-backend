@@ -21,7 +21,6 @@ jspecifyVersion = "1.0.1"
 
 [libraries]
 purefunMonad = { group = "com.github.tonivade", name = "purefun-monad", version.ref = "purefunVersion" }
-purefunEffect = { group = "com.github.tonivade", name = "purefun-effect", version.ref = "purefunVersion" }
 purefunTransformer = { group = "com.github.tonivade", name = "purefun-transformer", version.ref = "purefunVersion" }
 purefunInstances = { group = "com.github.tonivade", name = "purefun-instances", version.ref = "purefunVersion" }
 zeromockServer = { group = "com.github.tonivade", name = "zeromock-server", version.ref = "zeromockVersion" }
