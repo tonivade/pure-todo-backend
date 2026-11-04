@@ -18,10 +18,10 @@ import com.github.tonivade.purefun.type.Validation.Result;
 import com.github.tonivade.todo.app.TodoAPI;
 import com.github.tonivade.todo.infra.TodoDAO;
 import com.github.tonivade.todo.infra.TodoDatabaseRepository;
-import com.github.tonivade.zeromock.api.HttpUIOService;
+import com.github.tonivade.zeromock.api.HttpIOService;
 import com.github.tonivade.zeromock.api.PostFilter;
 import com.github.tonivade.zeromock.api.PreFilter;
-import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+import com.github.tonivade.zeromock.server.IOMockHttpServer;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -40,17 +40,17 @@ public final class App {
     return Config.load().validatedRun(fromToml("application.toml"));
   }
 
-  static UIOMockHttpServer buildServer(Config config) {
-    return UIOMockHttpServer.builder()
+  static IOMockHttpServer buildServer(Config config) {
+    return IOMockHttpServer.builder()
         .host(config.server().host())
         .port(config.server().port())
         .build();
   }
 
-  static HttpUIOService buildService(Config config) {
+  static HttpIOService buildService(Config config) {
     var api = new TodoAPI(buildRepository(config));
 
-    return new HttpUIOService("todo backend")
+    return new HttpIOService("todo backend")
         .preFilter(PreFilter.print(System.out))
         .get("/:id").then(api::find)
         .get("/").then(api.findAll())

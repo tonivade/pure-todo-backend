@@ -90,7 +90,6 @@ dependencies {
   errorprone libs.errorprone
   annotationProcessor libs.purejson
   implementation libs.purefunMonad
-  implementation libs.purefunEffect
   implementation libs.purefunTransformer
   runtimeOnly libs.purefunInstances
   implementation libs.zeromockServer

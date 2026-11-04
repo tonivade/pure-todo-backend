@@ -6,8 +6,6 @@ package com.github.tonivade.todo.app;
 
 import static com.github.tonivade.purefun.core.Function1.cons;
 import static com.github.tonivade.purefun.core.Precondition.checkNonNull;
-import static com.github.tonivade.purefun.effect.Task.liftEither;
-import static com.github.tonivade.purefun.effect.Task.liftTry;
 import static com.github.tonivade.todo.app.TodoDTO.fromDomain;
 import static com.github.tonivade.zeromock.api.Deserializers.jsonToObject;
 import static com.github.tonivade.zeromock.api.Extractors.pathParam;
@@ -18,9 +16,8 @@ import com.github.tonivade.purefun.core.Producer;
 import com.github.tonivade.purefun.core.Tuple2;
 import com.github.tonivade.purefun.core.Tuple3;
 import com.github.tonivade.purefun.data.Sequence;
-import com.github.tonivade.purefun.effect.Task;
-import com.github.tonivade.purefun.effect.TaskOf;
-import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.monad.IO;
+import com.github.tonivade.purefun.monad.IOOf;
 import com.github.tonivade.purefun.type.Option;
 import com.github.tonivade.purefun.typeclasses.Instances;
 import com.github.tonivade.purejson.TypeToken;
@@ -37,104 +34,104 @@ import java.lang.reflect.Type;
 
 public final class TodoAPI {
 
-  private final TodoRepository<Task<?>> repository;
+  private final TodoRepository<IO<?>> repository;
 
   private final Type seqOfTodos = new TypeToken<Sequence<TodoDTO>>() {}.getType();
 
-  public TodoAPI(TodoRepository<Task<?>> repository) {
+  public TodoAPI(TodoRepository<IO<?>> repository) {
     this.repository = checkNonNull(repository);
   }
 
-  public UIO<HttpResponse> cors() {
-    return UIO.pure(Responses.ok());
+  public IO<HttpResponse> cors() {
+    return IO.pure(Responses.ok());
   }
 
-  public UIO<HttpResponse> create(HttpRequest request) {
+  public IO<HttpResponse> create(HttpRequest request) {
     return getTodoDTO(request)
-        .flatMap(liftEither(TodoDTO::toDraft))
+        .flatMap(IO.liftEither(TodoDTO::toDraft))
         .flatMap(repository::create)
         .flatMap(this::serializeTodo)
-        .fold(fromError(), Responses::created);
+        .redeem(fromError(), Responses::created);
   }
 
-  public UIO<HttpResponse> update(HttpRequest request) {
+  public IO<HttpResponse> update(HttpRequest request) {
     return getTodoDTO(request)
-        .flatMap(liftEither(TodoDTO::toDomain))
+        .flatMap(IO.liftEither(TodoDTO::toDomain))
         .flatMap(repository::update)
-        .flatMap(Task::fromOption)
+        .flatMap(IO::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(), Responses::ok);
+        .redeem(fromError(), Responses::ok);
   }
 
-  public UIO<HttpResponse> modify(HttpRequest request) {
+  public IO<HttpResponse> modify(HttpRequest request) {
     return getIdAndUpdate(request)
         .flatMap(tuple -> tuple.map1(Id::new).applyTo(repository::modify))
-        .flatMap(Task::fromOption)
+        .flatMap(IO::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(), Responses::ok);
+        .redeem(fromError(), Responses::ok);
   }
 
-  public UIO<HttpResponse> findAll() {
-    return repository.findAll().fix(TaskOf::toTask)
+  public IO<HttpResponse> findAll() {
+    return repository.findAll().fix(IOOf::toIO)
         .flatMap(this::serializeTodoList)
-        .fold(fromError(), Responses::ok);
+        .redeem(fromError(), Responses::ok);
   }
 
-  public UIO<HttpResponse> find(HttpRequest request) {
+  public IO<HttpResponse> find(HttpRequest request) {
     return getId(request)
         .map(Id::new)
         .flatMap(repository::find)
-        .flatMap(Task::fromOption)
+        .flatMap(IO::fromOption)
         .flatMap(this::serializeTodo)
-        .fold(fromError(), Responses::ok);
+        .redeem(fromError(), Responses::ok);
   }
 
-  public UIO<HttpResponse> delete(HttpRequest request) {
+  public IO<HttpResponse> delete(HttpRequest request) {
     return getId(request)
         .map(Id::new)
         .flatMap(repository::delete)
-        .fold(fromError(), cons(Responses.ok()));
+        .redeem(fromError(), cons(Responses.ok()));
   }
 
-  public UIO<HttpResponse> deleteAll() {
-     return repository.deleteAll().fix(TaskOf::toTask)
-        .fold(fromError(), cons(Responses.ok()));
+  public IO<HttpResponse> deleteAll() {
+     return repository.deleteAll().fix(IOOf::toIO)
+        .redeem(fromError(), cons(Responses.ok()));
   }
 
-  private Task<TodoDTO> getTodoDTO(HttpRequest request) {
-    return Task.task(request::body)
-        .flatMap(jsonToObject(TodoDTO.class).andThen(Task::fromTry))
-        .flatMap(Task::fromOption);
+  private IO<TodoDTO> getTodoDTO(HttpRequest request) {
+    return IO.task(request::body)
+        .flatMap(jsonToObject(TodoDTO.class).andThen(IO::fromTry))
+        .flatMap(IO::fromOption);
   }
 
-  private Task<Integer> getId(HttpRequest request) {
-    return Task.pure(request).map(pathParam(0))
+  private IO<Integer> getId(HttpRequest request) {
+    return IO.pure(request).map(pathParam(0))
         .map(Integer::parseInt);
   }
 
-  private Task<Option<String>> getTitle(HttpRequest request) {
-    return Task.pure(request).map(Extractors.<String>extract("$.title").liftOption());
+  private IO<Option<String>> getTitle(HttpRequest request) {
+    return IO.pure(request).map(Extractors.<String>extract("$.title").liftOption());
   }
 
-  private Task<Option<Integer>> getOrder(HttpRequest request) {
-    return Task.pure(request).map(Extractors.<Integer>extract("$.order").liftOption());
+  private IO<Option<Integer>> getOrder(HttpRequest request) {
+    return IO.pure(request).map(Extractors.<Integer>extract("$.order").liftOption());
   }
 
-  private Task<Option<Boolean>> getCompleted(HttpRequest request) {
-    return Task.pure(request).map(Extractors.<Boolean>extract("$.completed").liftOption());
+  private IO<Option<Boolean>> getCompleted(HttpRequest request) {
+    return IO.pure(request).map(Extractors.<Boolean>extract("$.completed").liftOption());
   }
 
-  private Task<Tuple2<Integer, Operator1<Todo>>> getIdAndUpdate(HttpRequest request) {
-    return getId(request).zip(getUpdate(request));
+  private IO<Tuple2<Integer, Operator1<Todo>>> getIdAndUpdate(HttpRequest request) {
+    return IO.tuple(getId(request), getUpdate(request));
   }
 
-  private Task<Operator1<Todo>> getUpdate(HttpRequest request) {
-    Task<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instances.<Task<?>>applicative()
+  private IO<Operator1<Todo>> getUpdate(HttpRequest request) {
+    IO<Tuple3<Operator1<Todo>, Operator1<Todo>, Operator1<Todo>>> map3 = Instances.<IO<?>>applicative()
         .mapN(
             getTitle(request).map(toOperation(Todo::withTitle)),
             getOrder(request).map(toOperation(Todo::withOrder)),
             getCompleted(request).map(toOperation(Todo::withCompleted)))
-        .apply(Tuple3::of).fix(TaskOf::toTask);
+        .apply(Tuple3::of).fix(IOOf::toIO);
     return map3.map(tuple -> tuple.applyTo((op1, op2, op3) -> op1.andThen(op2).andThen(op3)::apply));
   }
 
@@ -149,13 +146,13 @@ public final class TodoAPI {
     };
   }
 
-  private Task<Bytes> serializeTodoList(Sequence<Todo> todoList) {
-    return Task.task(() -> todoList.map(TodoDTO::fromDomain))
-        .flatMap(liftTry(Serializers.<Sequence<TodoDTO>>objectToJson(seqOfTodos)));
+  private IO<Bytes> serializeTodoList(Sequence<Todo> todoList) {
+    return IO.task(() -> todoList.map(TodoDTO::fromDomain))
+        .flatMap(IO.liftTry(Serializers.<Sequence<TodoDTO>>objectToJson(seqOfTodos)));
   }
 
-  private Task<Bytes> serializeTodo(Todo todo) {
-    return Task.task(() -> fromDomain(todo))
-        .flatMap(liftTry(Serializers.<TodoDTO>objectToJson()));
+  private IO<Bytes> serializeTodo(Todo todo) {
+    return IO.task(() -> fromDomain(todo))
+        .flatMap(IO.liftTry(Serializers.<TodoDTO>objectToJson()));
   }
 }

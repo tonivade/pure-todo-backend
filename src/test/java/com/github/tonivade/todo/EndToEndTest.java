@@ -21,31 +21,31 @@ import java.lang.reflect.Type;
 import java.net.HttpRetryException;
 
 import org.junit.jupiter.api.Test;
-import com.github.tonivade.purecheck.spec.UIOTestSpec;
+import com.github.tonivade.purecheck.spec.IOTestSpec;
 import com.github.tonivade.purefun.core.Function1;
 import com.github.tonivade.purefun.core.Validator;
 import com.github.tonivade.purefun.data.ImmutableList;
-import com.github.tonivade.purefun.effect.UIO;
+import com.github.tonivade.purefun.monad.IO;
 import com.github.tonivade.purejson.TypeToken;
 import com.github.tonivade.todo.app.TodoDTO;
 import com.github.tonivade.zeromock.api.HttpResponse;
 import com.github.tonivade.zeromock.api.HttpStatus;
-import com.github.tonivade.zeromock.api.HttpUIOService;
-import com.github.tonivade.zeromock.client.UIOHttpClient;
+import com.github.tonivade.zeromock.api.HttpIOService;
+import com.github.tonivade.zeromock.client.IOHttpClient;
 import com.github.tonivade.zeromock.junit5.Mount;
 import com.github.tonivade.zeromock.junit5.Zeromock;
-import com.github.tonivade.zeromock.server.UIOMockHttpServer;
+import com.github.tonivade.zeromock.server.IOMockHttpServer;
 
-@Zeromock(type = UIOMockHttpServer.class)
-class EndToEndTest extends UIOTestSpec<String> {
+@Zeromock(type = IOMockHttpServer.class)
+class EndToEndTest extends IOTestSpec<String> {
 
   final Type listOfTodos = new TypeToken<ImmutableList<TodoDTO>>() {}.getType();
 
   @Mount(TODO)
-  final HttpUIOService service = App.loadConfig().map(App::buildService).getOrElseThrow();
+  final HttpIOService service = App.loadConfig().map(App::buildService).getOrElseThrow();
 
   @Test
-  void test(UIOMockHttpServer server, UIOHttpClient client) {
+  void test(IOMockHttpServer server, IOHttpClient client) {
     var todoClient = new TodoClient(client);
 
     var suite = suite("Pure Todo Backend End2End",
@@ -167,21 +167,21 @@ class EndToEndTest extends UIOTestSpec<String> {
     private static final String APPLICATION_JSON = "application/json";
     private static final String CONTENT_TYPE = "Content-type";
 
-    private final UIOHttpClient client;
+    private final IOHttpClient client;
 
-    public TodoClient(UIOHttpClient client) {
+    public TodoClient(IOHttpClient client) {
       this.client = checkNonNull(client);
     }
 
-    private UIO<HttpResponse> deleteAll() {
+    private IO<HttpResponse> deleteAll() {
       return client.request(delete(TODO));
     }
 
-    private UIO<HttpResponse> getAll() {
+    private IO<HttpResponse> getAll() {
       return client.request(get(TODO));
     }
 
-    private UIO<HttpResponse> createNew(String title) {
+    private IO<HttpResponse> createNew(String title) {
       return client.request(post(TODO)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -190,7 +190,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             """.formatted(title)));
     }
 
-    private UIO<HttpResponse> createNew() {
+    private IO<HttpResponse> createNew() {
       return client.request(post(TODO)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -199,7 +199,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             """));
     }
 
-    private UIO<HttpResponse> updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {
+    private IO<HttpResponse> updateTitleOrderAndCompleted(int id, String title, int order, boolean completed) {
       return client.request(patch(TODO + "/" + id)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -212,7 +212,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             """.formatted(title, order, completed)));
     }
 
-    private UIO<HttpResponse> updateTitle(int id, String title) {
+    private IO<HttpResponse> updateTitle(int id, String title) {
       return client.request(patch(TODO + "/" + id)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -221,7 +221,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             """.formatted(title)));
     }
 
-    private UIO<HttpResponse> updateOrder(int id, int order) {
+    private IO<HttpResponse> updateOrder(int id, int order) {
       return client.request(patch(TODO + "/" + id)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -230,7 +230,7 @@ class EndToEndTest extends UIOTestSpec<String> {
             """.formatted(order)));
     }
 
-    private UIO<HttpResponse> updateCompleted(int id, boolean completed) {
+    private IO<HttpResponse> updateCompleted(int id, boolean completed) {
       return client.request(patch(TODO + "/" + id)
         .withHeader(CONTENT_TYPE, APPLICATION_JSON)
         .withBody(
@@ -245,17 +245,17 @@ class EndToEndTest extends UIOTestSpec<String> {
     }
   }
 
-  private Function1<HttpResponse, UIO<ImmutableList<TodoDTO>>> parseList() {
-    return UIOHttpClient.<ImmutableList<TodoDTO>>parse(listOfTodos);
+  private Function1<HttpResponse, IO<ImmutableList<TodoDTO>>> parseList() {
+    return IOHttpClient.<ImmutableList<TodoDTO>>parse(listOfTodos);
   }
 
-  private Function1<HttpResponse, UIO<TodoDTO>> parseItem() {
-    return UIOHttpClient.<TodoDTO>parse();
+  private Function1<HttpResponse, IO<TodoDTO>> parseItem() {
+    return IOHttpClient.<TodoDTO>parse();
   }
 
-  private Function1<HttpResponse, UIO<HttpResponse>> expects(HttpStatus status) {
+  private Function1<HttpResponse, IO<HttpResponse>> expects(HttpStatus status) {
     return response -> response.status() != status
-        ? UIO.raiseError(new HttpRetryException("expected status was " + status, response.status().code()))
-        : UIO.pure(response);
+        ? IO.raiseError(new HttpRetryException("expected status was " + status, response.status().code()))
+        : IO.pure(response);
   }
 }
