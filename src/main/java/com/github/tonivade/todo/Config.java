@@ -25,7 +25,7 @@ public value record Config(Server server, Database database) {
         readConfig("database", Database.load())).apply(Config::new);
   }
 
-  public record Server(String host, Integer port) {
+  public value record Server(String host, Integer port) {
 
     public Server {
       checkNonNull(host);
@@ -38,7 +38,7 @@ public value record Config(Server server, Database database) {
     }
   }
 
-  public record Database(String url, String user, String password) {
+  public value record Database(String url, String user, String password) {
 
     public Database {
       checkNonNull(url);
