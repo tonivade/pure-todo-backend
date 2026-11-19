@@ -39,7 +39,7 @@ java {
 }
 
 jacoco {
-  toolVersion = '0.8.16-SNAPSHOT'
+  toolVersion = '0.8.16'
 }
 
 test {
